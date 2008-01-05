@@ -1,9 +1,0 @@
-obj\Debug\ResolveAssemblyReference.cache
-obj\Debug\KompresjaFraktalna.Properties.Resources.resources
-obj\Debug\KompresjaFraktalna.csproj.GenerateResource.Cache
-bin\Debug\KompresjaFraktalna.exe.config
-bin\Debug\KompresjaFraktalna.exe
-bin\Debug\KompresjaFraktalna.pdb
-obj\Debug\KompresjaFraktalna.exe
-obj\Debug\KompresjaFraktalna.pdb
-obj\Debug\KompresjaFraktalna.KompresjaForm.resources
