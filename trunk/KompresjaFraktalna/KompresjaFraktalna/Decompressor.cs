@@ -11,14 +11,14 @@ namespace KompresjaFraktalna {
             /*
              * A decompression algorithm - Strona 7 (3.3)
              * 
-             */ 
+             */
 
 
             /*
              * create the queues AD[i], CON[i], IP[i], i = 1,2...,dmax, which contain the addresses, contractivity factors
              * and interpolation points of the regions of side delta/a^(i-1).  
              * All these numbers were stored in aqueue, cqueue and iqueue respectively.
-             */ 
+             */
 
             int _delta;
             int _Delta;
@@ -26,8 +26,8 @@ namespace KompresjaFraktalna {
             List<Point> _IP;
             List<double> _CON;
             List<Address> _AD;
-            
-            int width,height;
+
+            int width, height;
             System.Runtime.Serialization.IFormatter formatter = new System.Runtime.Serialization.Formatters.Soap.SoapFormatter();
 
             width = (int)formatter.Deserialize(inputStream);
@@ -36,7 +36,7 @@ namespace KompresjaFraktalna {
             _delta = (int)formatter.Deserialize(inputStream);
             _Delta = (int)formatter.Deserialize(inputStream);
             _CON = (List<double>)formatter.Deserialize(inputStream);
-            _IP =(List<Point>) formatter.Deserialize(inputStream);
+            _IP = (List<Point>)formatter.Deserialize(inputStream);
             _AD = (List<Address>)formatter.Deserialize(inputStream);
 
             int[,] image = new int[width, height];
@@ -60,7 +60,7 @@ namespace KompresjaFraktalna {
              * Compute steps = trunc(log(delta) / log(a))  [ a = delta/ Delta ] .
              */
 
-            int a = _delta/_Delta;
+            double a = (double)_delta / (double)_Delta;
             double logdelta = Math.Log(_delta);
             double logA = Math.Log(a);
             int steps = (int)Math.Floor(logdelta / logA);
@@ -80,7 +80,7 @@ namespace KompresjaFraktalna {
                      */
 
                     // tworzymy regiony o boku delta / a&(i - 1)
-                    List<Region> regions = GenerateRegions((int)(_delta / Math.Pow(a, i - 1)));
+                    List<Region> regions = GenerateRegions((int)(_delta / Math.Pow(a, i - 1)),width,height);
                     foreach (Region region in regions) {
                         /*
                          * punkt 4.a.i
@@ -118,7 +118,7 @@ namespace KompresjaFraktalna {
                              * mapped and, therefore, capable of been mapped again. So, to go from one line to the next,
                              * you must skip delta/a^(t-1) lines.
                              * 
-                             */ 
+                             */
 
                             // czy to znaczy ze dla t = 1 mamy wejsc do tej petli czy nie? - mamy 1 wiersz i 1 kolumne. 
                             for (int k = 1; k <= Math.Pow(a, t - 1); ++k) {
@@ -133,7 +133,7 @@ namespace KompresjaFraktalna {
 
                                 if (k == 1) {
 
-                                    
+
 
                                 } else {
 
@@ -155,7 +155,7 @@ namespace KompresjaFraktalna {
                              * the next point. map the next a-1 point etc.
                              * Do this until the right domain endpoint is reached (a^(t-1) times). Remember that these a-1 
                              * point are not consecutive! to go from one point to the next you must skip delta/a^(t-1) points.
-                             */ 
+                             */
 
 
 
@@ -175,8 +175,23 @@ namespace KompresjaFraktalna {
             return image;
         }
 
-        private List<Region> GenerateRegions(int p) {
-            throw new Exception("The method or operation is not implemented.");
+        /// <summary>
+        /// generuje regiony. wierszowo. zakladam ze width = k* side & height = l * side , k,l Naturalne.
+        /// </summary>
+        /// <param name="side">dlugosc boku</param>
+        /// <param name="width">szerokosc obszaru</param>
+        /// <param name="height">wysokosc obszaru</param>
+        /// <returns>podzial na regiony</returns>
+        private List<Region> GenerateRegions(int side, int width, int height) {
+            List<Region> regions = new List<Region>();
+            
+            for (int y = 0; y < height; y += side)
+                for (int x = 0; x < width; x += side) {
+                    Region r = new Region(x, y, side, side, 0, 0, 0, 0);
+                    regions.Add(r);
+                }
+
+            return regions;
         }
     }
 }
