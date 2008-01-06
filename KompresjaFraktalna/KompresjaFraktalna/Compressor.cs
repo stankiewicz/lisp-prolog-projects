@@ -34,18 +34,18 @@ namespace KompresjaFraktalna {
              * the first and the addresses in the latter). set the depth d = 1 and create queue named squeue2.
              */
 
-            LinkedList<Region> squeue, squeue2;
-            LinkedList<Point> iqueue;
-            LinkedList<double> cqueue;
-            LinkedList<Address> aqueue;
+            List<Region> squeue, squeue2;
+            List<Point> iqueue;
+            List<double> cqueue;
+            List<Address> aqueue;
             int _d;
 
             squeue = GenerateRegions();
             iqueue = GenerateInterpolationPoints();
-            cqueue = new LinkedList<double>();
-            aqueue = new LinkedList<Address>();
+            cqueue = new List<double>();
+            aqueue = new List<Address>();
             _d = 1;
-            squeue2 = new LinkedList<Region>();
+            squeue2 = new List<Region>();
 
             do {
 
@@ -55,14 +55,14 @@ namespace KompresjaFraktalna {
                  */
 
 
-                LinkedList<Domain> domains = GenerateDomains();
+                List<Domain> domains = GenerateDomains();
                 while (squeue.Count != 0) {
                     /*
                      * 3.a: 
                      * get one region from squeue
                      */
-                    Region region = squeue.First.Value;
-                    squeue.RemoveFirst();
+                    Region region = squeue[0];
+                    squeue.RemoveAt(0);
 
 
                     Address minimum = new Address();
@@ -96,6 +96,8 @@ namespace KompresjaFraktalna {
 
                         /* w tym miejscu wydaje mi sie ze trzeba wyliczyc 8 rownan z 8 niewiadomymi. niewiadome to
                          * aij, kij, dij, lij, eij,gij,hij,mij. - rownania  pod koniec 2giej strony.
+                         * 
+                         * aczkolwiek 'Mapping Algorithm opisany na gorze 7 strony jest dziwny'
                          */
 
 
@@ -148,25 +150,25 @@ namespace KompresjaFraktalna {
                         r3 = GenerateRegion(region.X, region.Y + r1.Height, region.Width / 2, region.Height - region.Height / 2, bitmap);
                         r4 = GenerateRegion(region.X + r1.Width, region.Y + r1.Height, region.Width - region.Width / 2, region.Height - region.Height / 2, bitmap);
 
-                        squeue2.AddLast(r1);
-                        squeue2.AddLast(r2);
-                        squeue2.AddLast(r3);
-                        squeue2.AddLast(r4);
+                        squeue2.Add(r1);
+                        squeue2.Add(r2);
+                        squeue2.Add(r3);
+                        squeue2.Add(r4);
                         foreach (Point p in r1.Points) {
-                            iqueue.AddLast(p);
+                            iqueue.Add(p);
                         }
                         foreach (Point p in r2.Points) {
-                            iqueue.AddLast(p);
+                            iqueue.Add(p);
                         }
                         foreach (Point p in r3.Points) {
-                            iqueue.AddLast(p);
+                            iqueue.Add(p);
                         }
                         foreach (Point p in r4.Points) {
-                            iqueue.AddLast(p);
+                            iqueue.Add(p);
                         }
                     } else {
-                        aqueue.AddLast(minimum);
-                        cqueue.AddLast(minimum.ContractivityFactor);
+                        aqueue.Add(minimum);
+                        cqueue.Add(minimum.ContractivityFactor);
                     }
                 }
                 /*
@@ -175,7 +177,7 @@ namespace KompresjaFraktalna {
 
                 if (squeue2.Count != 0) {
                     squeue = squeue2;
-                    squeue2 = new LinkedList<Region>(); // ? nie jestem pewien, ale raczej trzeba wyczyscic
+                    squeue2 = new List<Region>(); // ? nie jestem pewien, ale raczej trzeba wyczyscic
                     _d += 1;
                 } else {
                     break;
@@ -226,15 +228,15 @@ namespace KompresjaFraktalna {
             throw new Exception("The method or operation is not implemented.");
         }
 
-        private LinkedList<Domain> GenerateDomains() {
+        private List<Domain> GenerateDomains() {
             throw new Exception("The method or operation is not implemented.");
         }
 
-        private LinkedList<Point> GenerateInterpolationPoints() {
+        private List<Point> GenerateInterpolationPoints() {
             throw new Exception("The method or operation is not implemented.");
         }
 
-        private LinkedList<Region> GenerateRegions() {
+        private List<Region> GenerateRegions() {
             throw new Exception("The method or operation is not implemented.");
         }
 
