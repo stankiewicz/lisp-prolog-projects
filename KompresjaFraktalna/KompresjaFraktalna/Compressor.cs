@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace KompresjaFraktalna {
-    class Compressor {
+    class Compressor:Common {
 
         /// <summary>
         /// kompresja jednej skladowej koloru
@@ -26,7 +26,8 @@ namespace KompresjaFraktalna {
             double _epsilon = Compression.Default.Epsilon;
             int _dMax = Compression.Default.Dmax;
 
-
+            int width = bitmap.GetLength(0);
+            int height = bitmap.GetLength(1);
             /*
              * punkt 2. create two queues, one named squeue and put all the regions inside as well 
              * as a queue named iqueue and put all initial interpolation points inside.
@@ -40,8 +41,8 @@ namespace KompresjaFraktalna {
             List<Address> aqueue;
             int _d;
 
-            squeue = GenerateRegions();
-            iqueue = GenerateInterpolationPoints();
+            squeue = GenerateRegions(_delta,width,height);
+            iqueue = GenerateInterpolationPoints(_delta, width, height);
             cqueue = new List<double>();
             aqueue = new List<Address>();
             _d = 1;
@@ -55,7 +56,7 @@ namespace KompresjaFraktalna {
                  */
 
 
-                List<Domain> domains = GenerateDomains();
+                List<Domain> domains = GenerateDomains(_Delta,width,height);
                 while (squeue.Count != 0) {
                     /*
                      * 3.a: 
@@ -228,17 +229,6 @@ namespace KompresjaFraktalna {
             throw new Exception("The method or operation is not implemented.");
         }
 
-        private List<Domain> GenerateDomains() {
-            throw new Exception("The method or operation is not implemented.");
-        }
-
-        private List<Point> GenerateInterpolationPoints() {
-            throw new Exception("The method or operation is not implemented.");
-        }
-
-        private List<Region> GenerateRegions() {
-            throw new Exception("The method or operation is not implemented.");
-        }
-
+        
     }
 }
