@@ -133,7 +133,7 @@ namespace KompresjaFraktalna {
 
                                 if (k == 1) {
 
-
+                                    
 
                                 } else {
 
