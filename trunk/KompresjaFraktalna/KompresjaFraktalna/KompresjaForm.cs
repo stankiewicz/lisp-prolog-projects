@@ -66,7 +66,7 @@ namespace KompresjaFraktalna {
             int[,] colorG = new int[bmLeft.Width, bmLeft.Height];
             for (int i = 0; i < bmLeft.Width; ++i) {
                 for (int j = 0; j < bmLeft.Height; ++j) {
-                    colorG[i, j] = (int)bmLeft.GetPixel(i, j).R;
+                    colorG[i, j] = (int)bmLeft.GetPixel(i, j).G;
                 }
             }
 
@@ -75,7 +75,7 @@ namespace KompresjaFraktalna {
             int[,] colorB = new int[bmLeft.Width, bmLeft.Height];
             for (int i = 0; i < bmLeft.Width; ++i) {
                 for (int j = 0; j < bmLeft.Height; ++j) {
-                    colorB[i, j] = (int)bmLeft.GetPixel(i, j).R;
+                    colorB[i, j] = (int)bmLeft.GetPixel(i, j).B;
                 }
             }
 
@@ -121,6 +121,9 @@ namespace KompresjaFraktalna {
                     bmRight.SetPixel(i, j, Color.FromArgb(colorR[i, j], colorG[i, j], colorB[i, j]));
                 }
             }
+
+            pictureBox2.Image = bmRight;
+            this.Validate();
 
         }
 
