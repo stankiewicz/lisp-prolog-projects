@@ -43,6 +43,8 @@ namespace KompresjaFraktalna {
 
             squeue = GenerateRegions(_delta,width,height);
             iqueue = GenerateInterpolationPoints(_delta, width, height);
+            
+
             cqueue = new List<double>();
             aqueue = new List<Address>();
             _d = 1;
@@ -101,6 +103,13 @@ namespace KompresjaFraktalna {
                          * aczkolwiek 'Mapping Algorithm opisany na gorze 7 strony jest dziwny'
                          */
 
+                        double [] parameters;
+                        if (TryMapDomainToRegion(domain, region, bitmap, out parameters)) {
+                            minimum.OtherParameters = parameters;
+
+                        } else {
+                            throw new Exception("moja glowa!! brak rozwiazania");
+                        }
 
                         /*
                          * 3.b.iv.
@@ -204,6 +213,36 @@ namespace KompresjaFraktalna {
             /*
              * punkt 6. koniec
              */
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="domain"></param>
+        /// <param name="region"></param>
+        /// <param name="bitmap"></param>
+        /// <param name="parameters"></param>
+        /// <returns>[a,k,d,l,e,g,h,m]</returns>
+        private bool TryMapDomainToRegion(Domain domain, Region region, int[,] bitmap, out double[] parameters) {
+            double[,] matrix = new double[9, 8];
+
+            for (int i = 0; i < 9; ++i)
+                for (int j = 0; j < 8; ++j)
+                    matrix[i, j] = 0;
+
+            //dla przypomnienia - matrix [kolumna, wiersz]
+            matrix[0, 0] = domain.X;
+            matrix[1, 0] = 1;
+            matrix[8, 0] = region.X;
+
+
+
+            parameters = new double[8];
+            return LinearEquationSolver.GaussianElimination(matrix, parameters);
+        }
+
+        private bool TryMapDomainToRegion(Domain domain, Region region) {
+            throw new Exception("The method or operation is not implemented.");
         }
 
         /// <summary>
