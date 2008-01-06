@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace KompresjaFraktalna {
-    class Compressor:Common {
+    class Compressor : Common {
 
         /// <summary>
         /// kompresja jednej skladowej koloru
         /// </summary>
         /// <param name="bitmap">tablica z wartosciami skladowej koloru</param>
         /// <param name="outputStream">strumien do ktorego zostanie zapisane wszystko</param>
-        public  void Compress(int [,] bitmap, System.IO.Stream outputStream) {
+        public void Compress(int[,] bitmap, System.IO.Stream outputStream) {
             /*
              * realizacja algorytmu ze strony 6.
              * 
@@ -41,9 +41,9 @@ namespace KompresjaFraktalna {
             List<Address> aqueue;
             int _d;
 
-            squeue = GenerateRegions(_delta,width,height);
+            squeue = GenerateRegions(_delta, width, height);
             iqueue = GenerateInterpolationPoints(_delta, width, height);
-            
+
 
             cqueue = new List<double>();
             aqueue = new List<Address>();
@@ -58,7 +58,7 @@ namespace KompresjaFraktalna {
                  */
 
 
-                List<Domain> domains = GenerateDomains(_Delta,width,height);
+                List<Domain> domains = GenerateDomains(_Delta, width, height);
                 while (squeue.Count != 0) {
                     /*
                      * 3.a: 
@@ -97,19 +97,34 @@ namespace KompresjaFraktalna {
                          */
 
 
-                        /* w tym miejscu wydaje mi sie ze trzeba wyliczyc 8 rownan z 8 niewiadomymi. niewiadome to
-                         * aij, kij, dij, lij, eij,gij,hij,mij. - rownania  pod koniec 2giej strony.
+                        /*
+                         * The Mapping Algorithm: We map the domain Dj to the region R.
                          * 
-                         * aczkolwiek 'Mapping Algorithm opisany na gorze 7 strony jest dziwny'
+                         * MA:1. Put the endpoints of the region R to the new set w(Dj)
+                         * 
+                         * MA:2. Compute the other parameters. Let a = delta/Delta, where delta,Delta are the side of the region
+                         * and the corresponding domain, respectively.
                          */
 
-                        double [] parameters;
-                        if (TryMapDomainToRegion(domain, region,contractivityFactor, bitmap, out parameters)) {
+                        double[] parameters;
+                        if (TryMapDomainToRegion(domain, region, contractivityFactor, bitmap, out parameters)) {
                             minimum.OtherParameters = parameters;
 
                         } else {
                             throw new Exception("moja glowa!! brak rozwiazania");
                         }
+
+                        /*
+                         * MA:3. Map the points of the first and last row (of Dj) as follows. The first and the last point of these
+                         * rows of Dj are interpolation points and the have been already mapped. Map the (a+1)-th point of the domain
+                         * to the 2nd point of the w(Dj). Continue by mapping the (2a +1), (3a + 1),.. point of the domain to the
+                         * 3rd,rth ... point of the w(Dj)
+                         * 
+                         * MA:4. For all other rows: Map the (a+1),(2a+1),.. point of the domain to the 1st,2nd.. point of w(Dj)
+                         * 
+                         * to wszystko bedzie potrzebne do wyliczenia odleglosci hij. gdzies trzeba zapamietac te punkty.
+                         */ 
+
 
                         /*
                          * 3.b.iv.
@@ -201,7 +216,7 @@ namespace KompresjaFraktalna {
              * 
              */
             System.Runtime.Serialization.IFormatter formatter = new System.Runtime.Serialization.Formatters.Soap.SoapFormatter();
-            formatter.Serialize(outputStream,bitmap.GetLength(0));
+            formatter.Serialize(outputStream, bitmap.GetLength(0));
             formatter.Serialize(outputStream, bitmap.GetLength(1));
             formatter.Serialize(outputStream, _dMax);
             formatter.Serialize(outputStream, _delta);
@@ -224,6 +239,12 @@ namespace KompresjaFraktalna {
         /// <param name="parameters"></param>
         /// <returns>[a,k,d,l,e,g,h,m]</returns>
         private bool TryMapDomainToRegion(Domain domain, Region region, double s, int[,] bitmap, out double[] parameters) {
+
+            /* w tym miejscu wydaje mi sie ze trzeba wyliczyc 8 rownan z 8 niewiadomymi. niewiadome to
+             * aij, kij, dij, lij, eij,gij,hij,mij. - rownania  pod koniec 2giej strony.
+             * 
+             * 
+             */
             double[,] matrix = new double[9, 8];
 
             for (int i = 0; i < 9; ++i)
@@ -231,7 +252,7 @@ namespace KompresjaFraktalna {
                     matrix[i, j] = 0;
 
             //dla przypomnienia - matrix [kolumna, wiersz]
-            
+
             // lewy gorny rog 
             matrix[0, 0] = domain.X;
             matrix[1, 0] = 1;
@@ -245,9 +266,9 @@ namespace KompresjaFraktalna {
             matrix[5, 2] = domain.Y;
             matrix[6, 2] = domain.X * domain.Y;
             matrix[7, 2] = 1;
-            matrix[8, 2] = (double)bitmap[region.X, region.Y] - s*(double)bitmap[domain.X,domain.Y];
+            matrix[8, 2] = (double)bitmap[region.X, region.Y] - s * (double)bitmap[domain.X, domain.Y];
 
-            matrix[0, 3] = domain.X+domain.Width;
+            matrix[0, 3] = domain.X + domain.Width;
             matrix[1, 3] = 1;
             matrix[8, 3] = region.X + region.Width;
 
@@ -267,25 +288,21 @@ namespace KompresjaFraktalna {
             matrix[5, 6] = domain.Y + domain.Height;
             matrix[6, 6] = domain.X * (domain.Y + domain.Height);
             matrix[7, 6] = 1;
-            matrix[8, 6] = (double)bitmap[region.X, region.Y+region.Height] - s * (double)bitmap[domain.X, domain.Y+domain.Height];
+            matrix[8, 6] = (double)bitmap[region.X, region.Y + region.Height] - s * (double)bitmap[domain.X, domain.Y + domain.Height];
 
             // prawy dolny
-            matrix[4, 7] = domain.X+domain.Width;
-            matrix[5, 7] = domain.Y+domain.Height;
-            matrix[6, 7] = (domain.X +domain.Width)* (domain.Y+domain.Height);
+            matrix[4, 7] = domain.X + domain.Width;
+            matrix[5, 7] = domain.Y + domain.Height;
+            matrix[6, 7] = (domain.X + domain.Width) * (domain.Y + domain.Height);
             matrix[7, 7] = 1;
-            matrix[8, 7] = (double)bitmap[region.X+region.Width, region.Y+region.Height] - s * (double)bitmap[domain.X+domain.Width, domain.Y+domain.Height];
-
-            
-
+            matrix[8, 7] = (double)bitmap[region.X + region.Width, region.Y + region.Height] - s * (double)bitmap[domain.X + domain.Width, domain.Y + domain.Height];
 
             parameters = new double[8];
+            for (int i = 0; i < 8; ++i) parameters[i] = 0;
             return LinearEquationSolver.GaussianElimination(matrix, parameters);
         }
 
-        private bool TryMapDomainToRegion(Domain domain, Region region) {
-            throw new Exception("The method or operation is not implemented.");
-        }
+        
 
         /// <summary>
         /// tworzy region z wypelnionymi danymi o kolorze
@@ -297,7 +314,7 @@ namespace KompresjaFraktalna {
         /// <param name="bitmap"></param>
         /// <returns></returns>
         private Region GenerateRegion(int x, int y, int width, int height, int[,] bitmap) {
-            Region r = new Region(x, y, width, height,bitmap[x,y],bitmap[x+width,y],bitmap[x,y+height],bitmap[x+width,y+height]);
+            Region r = new Region(x, y, width, height, bitmap[x, y], bitmap[x + width, y], bitmap[x, y + height], bitmap[x + width, y + height]);
             return r;
         }
 
@@ -310,6 +327,6 @@ namespace KompresjaFraktalna {
             throw new Exception("The method or operation is not implemented.");
         }
 
-        
+
     }
 }
