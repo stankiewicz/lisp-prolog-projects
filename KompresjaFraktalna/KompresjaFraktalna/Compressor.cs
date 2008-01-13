@@ -6,17 +6,20 @@ namespace KompresjaFraktalna {
     class Compressor : Common {
 
         /// <summary>
-        /// kompresja jednej skladowej koloru
+        /// Kompresja jednej skladowej koloru.
         /// </summary>
         /// <param name="bitmap">tablica z wartosciami skladowej koloru</param>
         /// <param name="outputStream">strumien do ktorego zostanie zapisane wszystko</param>
         public void Compress(int[,] bitmap, System.IO.Stream outputStream) {
-            /*
-             * realizacja algorytmu ze strony 6.
-             * 
-             */
+			/*
+			 * realizacja algorytmu ze strony 6.
+			 */
 
-            /*
+			int width = bitmap.GetLength(0);
+			int height = bitmap.GetLength(1);
+
+			#region Step 1)
+			/*
              * Punkt 1. choose values for delta and Delta, such that Delta = a * delta. 
              * Choose also, error tolerance Epsilon and maximum depth Dmax.
              */
@@ -26,47 +29,41 @@ namespace KompresjaFraktalna {
             double _epsilon = Compression.Default.Epsilon;
             int _dMax = Compression.Default.Dmax;
 
-            int width = bitmap.GetLength(0);
-            int height = bitmap.GetLength(1);
-            /*
-             * punkt 2. create two queues, one named squeue and put all the regions inside as well 
-             * as a queue named iqueue and put all initial interpolation points inside.
-             * In addition create two empty queues named cqueue and aqueue (we store contractivity factors in
-             * the first and the addresses in the latter). set the depth d = 1 and create queue named squeue2.
+			#endregion
+
+
+			#region Step 2)
+			/*
+             * punkt 2. create two queues, one named 'squeue' and put all the regions inside as well 
+             * as a queue named 'iqueue' and put all initial interpolation points inside.
+             * In addition create two empty queues named 'cqueue' and 'aqueue' (we store contractivity factors in
+             * the first and the addresses in the latter). set the depth d = 1 and create queue named 'squeue2'.
              */
 
-            List<Region> squeue, squeue2;
-            List<Point> iqueue;
-            List<double> cqueue;
-            List<Address> aqueue;
-            int _d;
+            Queue<Region> squeue = GenerateRegions(_delta, width, height);
+			Queue<Point> iqueue = GenerateInterpolationPoints(_delta, width, height);
+			Queue<double> cqueue = new Queue<double>();
+			Queue<Address> aqueue = new Queue<Address>();
+			Queue<Region> squeue2 = new Queue<Region>();
+            int d = 1;
 
-            squeue = GenerateRegions(_delta, width, height);
-            iqueue = GenerateInterpolationPoints(_delta, width, height);
+			Queue<Domain> domains = GenerateDomains(_Delta, width, height);
 
+			#endregion
 
-            cqueue = new List<double>();
-            aqueue = new List<Address>();
-            _d = 1;
-            squeue2 = new List<Region>();
-
-            do {
-
-                /*
+			do {
+				#region Step 3)
+				/*
                  * Punkt 3. 
-                 * while squeue is not empty do:
-                 */
+                 * while 'squeue' is not empty do:
+                 */               
 
-
-                List<Domain> domains = GenerateDomains(_Delta, width, height);
                 while (squeue.Count != 0) {
                     /*
                      * 3.a: 
                      * get one region from squeue
                      */
-                    Region region = squeue[0];
-                    squeue.RemoveAt(0);
-
+					Region region = squeue.Dequeue();
 
                     Address minimum = new Address();
                     minimum.Hij = Double.MaxValue;
@@ -97,7 +94,7 @@ namespace KompresjaFraktalna {
                          */
 
 
-                        /*
+						/*
                          * The Mapping Algorithm: We map the domain Dj to the region R.
                          * 
                          * MA:1. Put the endpoints of the region R to the new set w(Dj)
@@ -167,55 +164,57 @@ namespace KompresjaFraktalna {
                      * else 
                      * store j with the minimum distance inside aqueue and s inside aqueue
                      */
-                    if (minimum.Hij > _epsilon && _d < _dMax) {
+                    if (minimum.Hij > _epsilon && d < _dMax) {
                         Region r1, r2, r3, r4;
-                        r1 = GenerateRegion(region.X, region.Y, region.Width / 2, region.Height / 2, bitmap);
                         r1 = GenerateRegion(region.X, region.Y, region.Width / 2, region.Height / 2, bitmap);
                         r2 = GenerateRegion(region.X + r1.Width, region.Y, region.Width - region.Width / 2, region.Height - region.Height / 2, bitmap);
                         r3 = GenerateRegion(region.X, region.Y + r1.Height, region.Width / 2, region.Height - region.Height / 2, bitmap);
                         r4 = GenerateRegion(region.X + r1.Width, region.Y + r1.Height, region.Width - region.Width / 2, region.Height - region.Height / 2, bitmap);
 
-                        squeue2.Add(r1);
-                        squeue2.Add(r2);
-                        squeue2.Add(r3);
-                        squeue2.Add(r4);
+                        squeue2.Enqueue(r1);
+						squeue2.Enqueue(r2);
+						squeue2.Enqueue(r3);
+						squeue2.Enqueue(r4);
                         foreach (Point p in r1.Points) {
-                            iqueue.Add(p);
+							iqueue.Enqueue(p);
                         }
                         foreach (Point p in r2.Points) {
-                            iqueue.Add(p);
+							iqueue.Enqueue(p);
                         }
                         foreach (Point p in r3.Points) {
-                            iqueue.Add(p);
+							iqueue.Enqueue(p);
                         }
                         foreach (Point p in r4.Points) {
-                            iqueue.Add(p);
+							iqueue.Enqueue(p);
                         }
+						//aqueue.Enqueue(0); ??
                     } else {
-                        aqueue.Add(minimum);
-                        cqueue.Add(minimum.ContractivityFactor);
+						aqueue.Enqueue(minimum);
+						cqueue.Enqueue(minimum.ContractivityFactor);
                     }
-                }
-                /*
-                 * punkt 4. if squeue2 is not empty, then set squeue = squeue2, d = d+1 ant go to 3.
-                 */
+				}
 
-                if (squeue2.Count != 0) {
-                    squeue = squeue2;
-                    squeue2 = new List<Region>(); // ? nie jestem pewien, ale raczej trzeba wyczyscic
-                    _d += 1;
-                } else {
-                    break;
-                }
-            } while (true);
+				#endregion
 
+				#region Step 4)
+				//if squeue2 is not empty, then set squeue = squeue2, d = d+1 ant go to 3)
 
-            /*
-             * punkt 5.
-             * store dmax, delta, Delta, cqueue, iqueue, aqueue
-             * 
-             */
-            System.Runtime.Serialization.IFormatter formatter = new System.Runtime.Serialization.Formatters.Soap.SoapFormatter();
+                if (squeue2.Count == 0) {
+					break;
+				}
+
+                squeue = squeue2;
+				//squeue2 = new Queue<Region>(); // ? nie jestem pewien, ale raczej trzeba wyczyscic
+				squeue2.Clear(); // tak siê czyœci ;)
+                d++;
+
+				#endregion
+			} while (true);
+
+			#region Step 5)
+			//store dmax, delta, Delta, cqueue, iqueue, aqueue
+
+			System.Runtime.Serialization.IFormatter formatter = new System.Runtime.Serialization.Formatters.Soap.SoapFormatter();
             formatter.Serialize(outputStream, bitmap.GetLength(0));
             formatter.Serialize(outputStream, bitmap.GetLength(1));
             formatter.Serialize(outputStream, _dMax);
@@ -225,9 +224,7 @@ namespace KompresjaFraktalna {
             formatter.Serialize(outputStream, iqueue);
             formatter.Serialize(outputStream, aqueue);
 
-            /*
-             * punkt 6. koniec
-             */
+			#endregion
         }
 
         /// <summary>
@@ -298,7 +295,9 @@ namespace KompresjaFraktalna {
             matrix[8, 7] = (double)bitmap[region.X + region.Width, region.Y + region.Height] - s * (double)bitmap[domain.X + domain.Width, domain.Y + domain.Height];
 
             parameters = new double[8];
-            for (int i = 0; i < 8; ++i) parameters[i] = 0;
+			for (int i = 0; i < 8; ++i) {
+				parameters[i] = 0;
+			}
             return LinearEquationSolver.GaussianElimination(matrix, parameters);
         }
 
