@@ -85,7 +85,7 @@ namespace KompresjaFraktalna {
                      */
 
                     // tworzymy regiony o boku delta / a&(i - 1)
-                    List<Region> regions = GenerateRegions((int)(_delta / Math.Pow(a, i - 1)),width,height);
+                    Queue<Region> regions = GenerateRegions((int)(_delta / Math.Pow(a, i - 1)),width,height);
                     foreach (Region region in regions) {
                         /*
                          * punkt 4.a.i
