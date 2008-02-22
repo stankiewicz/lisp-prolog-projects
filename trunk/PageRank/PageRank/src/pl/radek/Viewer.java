@@ -16,7 +16,8 @@ public class Viewer extends JFrame {
 	 */
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-
+		Viewer viewer= new Viewer();
+		viewer.show();
 	}
 
 }
