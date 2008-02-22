@@ -18,7 +18,7 @@ namespace KompresjaFraktalna {
 
 			for (int y = 0; y < height; y += side) {
 				for (int x = 0; x < width; x += side) {
-					Region r = new Region(x, y, side, side, 0, 0, 0, 0);
+					Region r = new Region(x, y, side + 1, side + 1, 0, 0, 0, 0);
 					regions.Enqueue(r);
 				}
 			}
@@ -38,7 +38,7 @@ namespace KompresjaFraktalna {
             int j = 0;
 			for (int y = 0; y < height; y += side) {
 				for (int x = 0; x < width; x += side) {
-					Domain d = new Domain(++j, x, y, side, side, 0, 0, 0, 0);
+					Domain d = new Domain(++j, x, y, side + 1, side + 1, 0, 0, 0, 0);
 					domains.Enqueue(d);
 				}
 			}
