@@ -26,9 +26,9 @@ namespace KompresjaFraktalna {
 
             int _delta = Compression.Default.SmallDelta;
             int _Delta = Compression.Default.BigDelta;
+            int _a = _Delta / _delta;
             double _epsilon = Compression.Default.Epsilon;
             int _dMax = Compression.Default.Dmax;
-
 			#endregion
 
 
@@ -45,6 +45,7 @@ namespace KompresjaFraktalna {
 			Queue<double> cqueue = new Queue<double>();
 			Queue<Address> aqueue = new Queue<Address>();
 			Queue<Region> squeue2 = new Queue<Region>();
+            Region[,] regions = new Region[width, height];
             int d = 1;
 
 			Queue<Domain> domains = GenerateDomains(_Delta, width, height);
@@ -73,7 +74,7 @@ namespace KompresjaFraktalna {
                          * 3.b.i. 
                          * compute the contractivity factor for the map acciociated with the j-th domain and the region.
                          */
-                        double contractivityFactor = ComputeContractivityFactor(domain, region);
+                        double contractivityFactor = ComputeContractivityFactor(domain, region,bitmap);
 
                         /*
                          * 3.b.ii. 
@@ -83,7 +84,7 @@ namespace KompresjaFraktalna {
                             continue;
                         }
 
-                        if (CheckConditionOfContinuity(domain, region) == false) {
+                        if (CheckConditionOfContinuity(domain, region,regions,_delta) == false) {
                             continue;
                         }
 
@@ -318,12 +319,86 @@ namespace KompresjaFraktalna {
         }
 
 
-        private bool CheckConditionOfContinuity(Domain domain, Region region) {
-            throw new Exception("The method or operation is not implemented.");
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="domain"></param>
+        /// <param name="region"></param>
+        /// <returns></returns>
+        private bool CheckConditionOfContinuity(Domain domain, Region region, Region[,] regions, int delta) {
+
+            if(region.X == 0 && region.Y ==0) return true;
+
+            if(region.X!=0){
+                // sprawdzamy lewy region
+                Region left = regions[region.X - region.Width + 1, region.Y];
+
+
+                // hack me
+                if (left.Depth != region.Depth) {
+                    return true;
+                }
+
+                // liczymy condition of continuity
+                Domain leftDomain = left.Domain;
+                double contrFactorLeft = left.ContractivityFactor;
+
+
+                // sprawdzamy prawa krawedz lewej domeny z lewa krawedzia domeny
+                for (int i = leftDomain.Y; i < leftDomain.Y + leftDomain.Height; i+=delta) {
+                    
+
+                }
+
+
+            }
+            return true;
+        }
+        
+
+
+
+        private double ComputeMeanDistance(Rectangle rect, int [,] bitmap) {
+
+            double a;
+            double distances = 0;
+
+
+            for (int row = rect.Y ; row < rect.Y + rect.Height; ++row) {
+                
+                a = (bitmap[rect.X + rect.Width, row] - bitmap[rect.X, row]) / rect.Width;
+
+                double aIter = a * rect.X;
+
+                for (int x = rect.X; x < rect.X + rect.Width; ++x) {
+
+                    aIter += a;
+                    distances += Math.Abs(aIter - bitmap[x,row]);
+                    // aIter wartosc w punkcie
+
+                }
+
+
+            }
+
+            distances/=rect.Height*rect.Width;
+            
+            return distances;
         }
 
-        private double ComputeContractivityFactor(Domain domain, Region region) {
-            throw new Exception("The method or operation is not implemented.");
+        private double ComputeContractivityFactor(Domain domain, Region region, int [,] bitmap) {
+            double mi = 1;
+            double ni = 1;
+
+            // mi - domena
+            mi = ComputeMeanDistance(domain,bitmap);
+
+
+
+            // ni - region
+            ni = ComputeMeanDistance(region,bitmap);
+
+            return ni / mi;
         }
 
 
