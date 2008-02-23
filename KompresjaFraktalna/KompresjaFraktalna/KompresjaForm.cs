@@ -11,6 +11,8 @@ namespace KompresjaFraktalna {
 
         Bitmap bmLeft;
 
+        Bitmap tmp;
+
         byte[] compressedImage;
 
         public KompresjaForm() {
@@ -39,6 +41,7 @@ namespace KompresjaFraktalna {
 
         private void kompresujToolStripMenuItem_Click(object sender, EventArgs e) {
             if (bmLeft != null) {
+                tmp = new Bitmap(bmLeft);
                 statusStrip1.Visible = true;
                 toolStripStatusLabel1.Text = "0 %";
                 toolStripProgressBar1.Value = 0;
@@ -53,48 +56,45 @@ namespace KompresjaFraktalna {
             System.IO.MemoryStream memoryStream = new System.IO.MemoryStream();
 
             // dzielimy na 3 kolory
+
+            UnsafeBitmap bm = new UnsafeBitmap(tmp);
+            bm.LockBitmap();
             Compressor compressor = new Compressor();
-            int[,] colorR = new int[bmLeft.Width, bmLeft.Height];
-            for (int i = 0; i < bmLeft.Width; ++i) {
-                for (int j = 0; j < bmLeft.Height; ++j) {
-                    colorR[i, j] = (int)bmLeft.GetPixel(i, j).R;
+
+            
+            int[,] colorR = new int[tmp.Width, tmp.Height];
+            int[,] colorG = new int[tmp.Width, tmp.Height];
+            int[,] colorB = new int[tmp.Width, tmp.Height];
+            PixelData pd;
+            for (int i = 0; i < bm.Width; ++i) {
+                for (int j = 0; j < bm.Height; ++j) {
+                    pd = bm.GetPixel(i, j);
+                    colorB[i, j] = (int)pd.B;
+                    colorG[i, j] = (int)pd.G;
+                    colorR[i, j] = (int)pd.R;
                 }
             }
-            this.backgroundWorker1.ReportProgress(5);
+            bm.UnlockBitmap();
 
-
-            int[,] colorG = new int[bmLeft.Width, bmLeft.Height];
-            for (int i = 0; i < bmLeft.Width; ++i) {
-                for (int j = 0; j < bmLeft.Height; ++j) {
-                    colorG[i, j] = (int)bmLeft.GetPixel(i, j).G;
-                }
-            }
-
-            this.backgroundWorker1.ReportProgress(10);
-
-            int[,] colorB = new int[bmLeft.Width, bmLeft.Height];
-            for (int i = 0; i < bmLeft.Width; ++i) {
-                for (int j = 0; j < bmLeft.Height; ++j) {
-                    colorB[i, j] = (int)bmLeft.GetPixel(i, j).B;
-                }
-            }
-
-            this.backgroundWorker1.ReportProgress(15);
+            //this.backgroundWorker1.ReportProgress(15);
 
             compressor.Compress(colorR, memoryStream);
 
-            this.backgroundWorker1.ReportProgress(35);
+            //this.backgroundWorker1.ReportProgress(35);
 
             compressor.Compress(colorG, memoryStream);
 
-            this.backgroundWorker1.ReportProgress(50);
+            //this.backgroundWorker1.ReportProgress(50);
 
             compressor.Compress(colorB, memoryStream);
 
-            this.backgroundWorker1.ReportProgress(70);
+            //this.backgroundWorker1.ReportProgress(70);
 
             memoryStream.Flush();
             compressedImage = memoryStream.ToArray();
+
+            System.Console.Out.Write(compressedImage);
+
             memoryStream.Position = 0;
             
             // a teraz odtwarzamy
@@ -128,8 +128,8 @@ namespace KompresjaFraktalna {
         }
 
         private void przerToolStripMenuItem_Click(object sender, EventArgs e) {
-            if(backgroundWorker1.IsBusy)
-                backgroundWorker1.CancelAsync();
+            //if(backgroundWorker1.IsBusy)
+            //    backgroundWorker1.CancelAsync();
         }
 
         private void backgroundWorker1_ProgressChanged(object sender, ProgressChangedEventArgs e) {
@@ -139,6 +139,11 @@ namespace KompresjaFraktalna {
         }
 
         private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e) {
+            if (e.Error != null) {
+                MessageBox.Show(e.Error.Message);
+                System.Console.Out.WriteLine(e.Error.Message);
+            }
+            System.Console.Out.WriteLine("dupa");
             this.statusStrip1.Visible = false;
             this.Validate();
         }

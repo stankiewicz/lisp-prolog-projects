@@ -5,6 +5,18 @@ using System.Text;
 namespace KompresjaFraktalna {
     class Compressor : Common {
 
+        int[,] bitmap;
+        int _delta;
+        int _Delta;
+        int _a;
+        double _epsilon;
+        double _epsilonHIJ = 50;
+
+
+        
+
+
+        int _dMax;
         /// <summary>
         /// Kompresja jednej skladowej koloru.
         /// </summary>
@@ -14,7 +26,7 @@ namespace KompresjaFraktalna {
 			/*
 			 * realizacja algorytmu ze strony 6.
 			 */
-
+            this.bitmap = bitmap;
 			int width = bitmap.GetLength(0);
 			int height = bitmap.GetLength(1);
 
@@ -41,13 +53,17 @@ namespace KompresjaFraktalna {
              */
 
             Queue<Region> squeue = GenerateRegions(_delta, width, height);
+            
 			Queue<Point> iqueue = GenerateInterpolationPoints(_delta, width, height);
 			Queue<double> cqueue = new Queue<double>();
 			Queue<Address> aqueue = new Queue<Address>();
 			Queue<Region> squeue2 = new Queue<Region>();
             Region[,] regions = new Region[width, height];
+            Queue<Region> _regions = new Queue<Region>();
             int d = 1;
-
+            foreach (Region reg in squeue) {
+                regions[reg.Left, reg.Bottom] = reg;
+            }
 			Queue<Domain> domains = GenerateDomains(_Delta, width, height);
 
 			#endregion
@@ -71,8 +87,8 @@ namespace KompresjaFraktalna {
 
                     foreach (Domain domain in domains) {
                         /*
-                         * 3.b.i. 
-                         * compute the contractivity factor for the map acciociated with the j-th domain and the region.
+                         * 3.b.x. 
+                         * compute the contractivity factor for the map acciociated with the y-th domain and the region.
                          */
                         double contractivityFactor = ComputeContractivityFactor(domain, region,bitmap);
 
@@ -83,14 +99,14 @@ namespace KompresjaFraktalna {
                         if (Math.Abs(contractivityFactor) >= 1) {
                             continue;
                         }
-
+                        region.ContractivityFactor = contractivityFactor;
                         if (CheckConditionOfContinuity(domain, region,regions,_delta) == false) {
                             continue;
                         }
 
                         /*
                          * 3.b.iii.
-                         * Compute the other parameters and map the points of the j-th domain (say Dj) through 'w' according
+                         * Compute the other parameters and map the points of the y-th domain (say Dj) through 'w' according
                          * to the 'mapping algorithm'. say w(Dj) the emerging set.
                          */
 
@@ -126,14 +142,10 @@ namespace KompresjaFraktalna {
 
                         /*
                          * 3.b.iv.
-                         * compute (with a proper distance measure) the distance hij between w(Dj) and the points of region i.
+                         * compute (with a proper distance measure) the distance hij between w(Dj) and the points of region x.
                          */
-
-                        /*
-                         * jak liczyc taka odleglosc?
-                         * po tym bedzie minimum.
-                         */
-                        double hij = 0;
+                        double hij = Distance(domain, region, parameters);
+                        
                         /*
                          * trzeba wszystko to zapamietac jesli hij jest mniejsze
                          */
@@ -145,13 +157,13 @@ namespace KompresjaFraktalna {
                         }
                         /*
                          * 3.b.v.
-                         * next j.
+                         * next y.
                          */
                     }
 
                     /*
                      * Punkt 3.c
-                     * Find the j for which hij is a minimum
+                     * Find the y for which hij is a minimum
                      */
 
                     //minimum - juz mamy
@@ -163,15 +175,22 @@ namespace KompresjaFraktalna {
                      * and add 0 (?dlaczego 0?) to aqueue.
                      * 
                      * else 
-                     * store j with the minimum distance inside aqueue and s inside aqueue
+                     * store y with the minimum distance inside aqueue and s inside aqueue
                      */
-                    if (minimum.Hij > _epsilon && d < _dMax) {
+                    if (minimum.Hij > _epsilonHIJ && d < _dMax) {
                         Region r1, r2, r3, r4;
-                        r1 = GenerateRegion(region.X, region.Y, region.Width / 2, region.Height / 2, bitmap);
-                        r2 = GenerateRegion(region.X + r1.Width, region.Y, region.Width - region.Width / 2, region.Height - region.Height / 2, bitmap);
-                        r3 = GenerateRegion(region.X, region.Y + r1.Height, region.Width / 2, region.Height - region.Height / 2, bitmap);
-                        r4 = GenerateRegion(region.X + r1.Width, region.Y + r1.Height, region.Width - region.Width / 2, region.Height - region.Height / 2, bitmap);
+                        int newSize = 1 + region.Size / 2;
+                        r1 = GenerateRegion(region.X, region.Y, newSize, newSize, bitmap);
+                        regions[r1.Left, r1.Bottom] = r1;
 
+                        r2 = GenerateRegion(region.X + newSize - 1, region.Y, newSize, newSize, bitmap);
+                        regions[r2.Left, r2.Bottom] = r2;
+                        r3 = GenerateRegion(region.X, region.Y + newSize - 1, newSize, newSize, bitmap);
+                        regions[r3.Left, r3.Bottom] = r3;
+
+                        r4 = GenerateRegion(region.X + newSize - 1, region.Y + newSize - 1, newSize, newSize, bitmap);
+                        regions[r4.Left, r4.Bottom] = r4;
+                        r1.Depth = r2.Depth = r3.Depth = r4.Depth = region.Depth + 1;
                         squeue2.Enqueue(r1);
 						squeue2.Enqueue(r2);
 						squeue2.Enqueue(r3);
@@ -188,10 +207,18 @@ namespace KompresjaFraktalna {
                         foreach (Point p in r4.Points) {
 							iqueue.Enqueue(p);
                         }
-						//aqueue.Enqueue(0); ??
+						//aqueue.Enqueue(0); //??
                     } else {
-						aqueue.Enqueue(minimum);
-						cqueue.Enqueue(minimum.ContractivityFactor);
+
+
+
+						//aqueue.Enqueue(minimum);
+						//cqueue.Enqueue(minimum.ContractivityFactor);
+
+                        region.Domain = minimum.Domain;
+                        region.ContractivityFactor = minimum.ContractivityFactor;
+                        region.Parameters = minimum.OtherParameters;
+                        _regions.Enqueue(region);
                     }
 				}
 
@@ -205,8 +232,8 @@ namespace KompresjaFraktalna {
 				}
 
                 squeue = squeue2;
-				//squeue2 = new Queue<Region>(); // ? nie jestem pewien, ale raczej trzeba wyczyscic
-				squeue2.Clear(); // tak siê czyœci ;)
+				squeue2 = new Queue<Region>(); // ? nie jestem pewien, ale raczej trzeba wyczyscic
+				
                 d++;
 
 				#endregion
@@ -215,17 +242,69 @@ namespace KompresjaFraktalna {
 			#region Step 5)
 			//store dmax, delta, Delta, cqueue, iqueue, aqueue
 
-			System.Runtime.Serialization.IFormatter formatter = new System.Runtime.Serialization.Formatters.Soap.SoapFormatter();
-            formatter.Serialize(outputStream, bitmap.GetLength(0));
-            formatter.Serialize(outputStream, bitmap.GetLength(1));
-            formatter.Serialize(outputStream, _dMax);
-            formatter.Serialize(outputStream, _delta);
-            formatter.Serialize(outputStream, _Delta);
-            formatter.Serialize(outputStream, cqueue);
-            formatter.Serialize(outputStream, iqueue);
-            formatter.Serialize(outputStream, aqueue);
-
+            SuperFajnaKlasa sfk = new SuperFajnaKlasa();
+            sfk.Height = bitmap.GetLength(1);
+            sfk.Width = bitmap.GetLength(0);
+            sfk.InterpolationPoints = iqueue.ToArray();
+            sfk.SmallDelta = _delta;
+            sfk.BigDelta = _Delta;
+            sfk.DMax = _dMax;
+            sfk.Regions = _regions.ToArray();
+			
+            sfk.Save(outputStream);
 			#endregion
+        }
+
+        private double Distance(Domain domain, Region region, double[] parameters) {
+            double hij = 0;
+            int delta = domain.Width / region.Width;
+
+            double[,] mappedRegion = new double[region.Width, region.Height];
+            for (int x = domain.Left; x <= domain.Right; x+=delta) {
+                for (int y = domain.Bottom; y <= domain.Top; y += delta) {
+                    int z = bitmap[x, y];
+                    double xm = parameters[(int)param.a] * x + parameters[(int)param.k];
+                    double ym = parameters[(int)param.d] * y + parameters[(int)param.l];
+                    double zm = parameters[(int)param.e] * x + parameters[(int)param.g] * y + parameters[(int)param.h] * x * y + region.ContractivityFactor * z + parameters[(int)param.m];
+
+                    mappedRegion[(int)xm - region.Left, (int)ym - region.Bottom] = zm;
+                }
+            }
+
+            for (int x = 0; x < region.Width; ++x) {
+                for (int y = 0; y < region.Height; ++y) {
+                    hij += Math.Abs(bitmap[region.X + x, region.Y + y] - mappedRegion[x, y]);
+                }
+            }
+
+            return hij / (region.Width * region.Width);
+        }
+        private bool TryMapDomainToRegion(Domain domain, Region region, double s, int[,] bitmap, out double[] parameters) {
+
+            parameters = new double[8];
+            parameters[(int)param.a] = ((double)region.Size - 1.0) / ((double)domain.Size - 1);
+            parameters[(int)param.k] = region.X - domain.X * parameters[(int)param.a];
+            parameters[(int)param.d] = parameters[(int)param.a];
+            parameters[(int)param.l] = region.Y - domain.Y * parameters[(int)param.a];
+            double[] B = new double[4];
+            double[,] A = new double[,] { 
+                  { domain.Left, domain.Bottom, domain.Left * domain.Bottom, 1, bitmap[region.Left, region.Bottom] - s * bitmap[domain.Left, domain.Bottom] },
+                  { domain.Right, domain.Bottom, (domain.Right)*(domain.Bottom), 1, bitmap[region.Right, region.Bottom] - s * bitmap[domain.Right, domain.Bottom]},
+                  { domain.Left, domain.Top, domain.Left*(domain.Top), 1, bitmap[region.Left, region.Top] - s * bitmap[domain.Left, domain.Top]},
+                  { domain.Right, domain.Top, (domain.Right)*(domain.Top), 1, bitmap[region.Right, region.Top] - s * bitmap[domain.Right, domain.Top]}
+           };
+            if (LinearEquationSolver.GaussianElimination(A, B)) {
+                parameters[(int)param.e] = B[0];
+                parameters[(int)param.g] = B[1];
+                parameters[(int)param.h] = B[2];
+                parameters[(int)param.m] = B[3];
+                return true;
+            } else
+                throw new Exception("Macierz osobliwa");
+
+
+            
+            
         }
 
         /// <summary>
@@ -236,7 +315,7 @@ namespace KompresjaFraktalna {
         /// <param name="bitmap"></param>
         /// <param name="parameters"></param>
         /// <returns>[a,k,d,l,e,g,h,m]</returns>
-        private bool TryMapDomainToRegion(Domain domain, Region region, double s, int[,] bitmap, out double[] parameters) {
+        private bool TryMapDomainToRegion2(Domain domain, Region region, double s, int[,] bitmap, out double[] parameters) {
 
             /* w tym miejscu wydaje mi sie ze trzeba wyliczyc 8 rownan z 8 niewiadomymi. niewiadome to
              * aij, kij, dij, lij, eij,gij,hij,mij. - rownania  pod koniec 2giej strony.
@@ -314,7 +393,7 @@ namespace KompresjaFraktalna {
         /// <param name="bitmap"></param>
         /// <returns></returns>
         private Region GenerateRegion(int x, int y, int width, int height, int[,] bitmap) {
-            Region r = new Region(x, y, width, height, bitmap[x, y], bitmap[x + width, y], bitmap[x, y + height], bitmap[x + width, y + height]);
+            Region r = new Region(x, y, width, height, bitmap[x, y], bitmap[x + width - 1, y], bitmap[x, y + height - 1], bitmap[x + width -1 , y + height - 1]);
             return r;
         }
 
@@ -327,36 +406,113 @@ namespace KompresjaFraktalna {
         /// <returns></returns>
         private bool CheckConditionOfContinuity(Domain domain, Region region, Region[,] regions, int delta) {
 
-            if(region.X == 0 && region.Y ==0) return true;
+            if(region.Bottom == 0 && region.Left ==0) return true;
 
-            if(region.X!=0){
+            do {
+
+                if (region.Left != 0) {
+                    // sprawdzamy lewy region
+                    Region left = regions[region.X - region.Width + 1, region.Y];
+                    if (left == null) break;
+
+                    // hack me
+                    if (left.Depth != region.Depth) {
+                        break;
+                    }
+
+                    // liczymy condition of continuity
+                    Domain leftDomain = left.Domain;
+                    if (leftDomain == null) break;
+                    double contrFactorLeft = left.ContractivityFactor;
+                    if (contrFactorLeft == Double.MaxValue) {
+                        break;
+                    }
+
+                    Double contrFactorRight = region.ContractivityFactor;
+
+                    // sprawdzamy prawa krawedz lewej domeny z lewa krawedzia domeny
+                    for (int i = delta; i < leftDomain.Height; i += delta) {
+                        // contrleft
+
+                        // contrRitfht
+
+                        // valDown
+                        int valLeft = bitmap[leftDomain.Right, i + leftDomain.Y];
+
+                        //valUp
+                        int valRight = bitmap[domain.X, i + domain.Y];
+
+                        double tmp1 = distanceFromLine(leftDomain.Bottom,
+                            bitmap[leftDomain.Right, leftDomain.Bottom], leftDomain.Top,
+                            bitmap[leftDomain.Right, leftDomain.Top],
+                            leftDomain.Bottom + i, bitmap[leftDomain.Right, leftDomain.Bottom + i]);
+                        double tmp2 = distanceFromLine(domain.Bottom,
+                            bitmap[domain.Left, domain.Bottom], domain.Top,
+                            bitmap[domain.Left, domain.Top],
+                            domain.Bottom + i, bitmap[domain.Left, domain.Bottom + i]);
+
+                        double? diff = contrFactorLeft * tmp1 - contrFactorRight * tmp2;
+                        if (Math.Abs(diff.Value) > this._epsilon) {
+                            return false;
+                        }
+                    }
+                }
+            } while (false);
+
+            if (region.Bottom != 0) {
                 // sprawdzamy lewy region
-                Region left = regions[region.X - region.Width + 1, region.Y];
-
+                Region down = regions[region.Left, region.Bottom - region.Height + 1];
+                if (down == null) return true;
 
                 // hack me
-                if (left.Depth != region.Depth) {
+                if (down.Depth != region.Depth) {
                     return true;
                 }
 
                 // liczymy condition of continuity
-                Domain leftDomain = left.Domain;
-                double contrFactorLeft = left.ContractivityFactor;
-
+                Domain downDomain = down.Domain;
+                if (downDomain == null) return true;
+                double contrFactorDown = down.ContractivityFactor;
+                if (contrFactorDown == Double.MaxValue) {
+                    return true;
+                }
+                Double contrFactorUp = region.ContractivityFactor;
 
                 // sprawdzamy prawa krawedz lewej domeny z lewa krawedzia domeny
-                for (int i = leftDomain.Y; i < leftDomain.Y + leftDomain.Height; i+=delta) {
-                    
+                for (int i = delta; i < downDomain.Width; i += delta) {
+   
 
+                    // valDown
+                    int valDown = bitmap[downDomain.Left + i, downDomain.Top];
+
+                    //valUp
+                    int valUp = bitmap[domain.X + i,  domain.Bottom];
+
+                    double tmp1 = distanceFromLine(downDomain.Left,
+                        bitmap[downDomain.Left, downDomain.Top], downDomain.Right,
+                        bitmap[downDomain.Right, downDomain.Top],
+                        downDomain.Left + i, bitmap[downDomain.Left + i, downDomain.Top]);
+                    double tmp2 = distanceFromLine(domain.Left,
+                        bitmap[domain.Left, domain.Bottom], domain.Right,
+                        bitmap[domain.Right, domain.Bottom],
+                        domain.Left + i, bitmap[domain.Left + i, domain.Bottom]);
+
+                    double diff = contrFactorDown * tmp1 - contrFactorUp * tmp2;
+                    if (Math.Abs(diff) > this._epsilon) {
+                        return false;
+                    }
                 }
-
-
             }
+               
+
+
             return true;
         }
-        
 
-
+        private double distanceFromLine(double x1, double z1, double x2, double z2, double xt, double zt) {
+            double a = (z2 - z1) / (x2-x1);
+            return Math.Abs(a * xt + z1 - zt);
+        }
 
         private double ComputeMeanDistance(Rectangle rect, int [,] bitmap) {
 
@@ -366,7 +522,7 @@ namespace KompresjaFraktalna {
 
             for (int row = rect.Y ; row < rect.Y + rect.Height; ++row) {
                 
-                a = (bitmap[rect.X + rect.Width, row] - bitmap[rect.X, row]) / rect.Width;
+                a = (bitmap[rect.Right, row] - bitmap[rect.X, row]) / rect.Width;
 
                 double aIter = a * rect.X;
 

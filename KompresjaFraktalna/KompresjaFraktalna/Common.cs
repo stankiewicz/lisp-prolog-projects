@@ -7,7 +7,7 @@ namespace KompresjaFraktalna {
 
         /// <summary>
         /// generuje regiony. wierszowo. 
-        /// zakladam ze width = k* side + 1 i height = l * side +1 , k,l Naturalne.
+        /// zakladam ze width = k* side + 1 x height = l * side +1 , k,l Naturalne.
         /// </summary>
         /// <param name="side">dlugosc boku</param>
         /// <param name="width">szerokosc obszaru</param>
@@ -16,9 +16,10 @@ namespace KompresjaFraktalna {
         protected Queue<Region> GenerateRegions(int side, int width, int height) {
             Queue<Region> regions = new Queue<Region>();
 
-			for (int y = 0; y < height; y += side) {
-				for (int x = 0; x < width; x += side) {
+			for (int y = 0; y < height -1; y += side) {
+				for (int x = 0; x < width -1; x += side) {
 					Region r = new Region(x, y, side + 1, side + 1, 0, 0, 0, 0);
+                    r.Depth = 1;
 					regions.Enqueue(r);
 				}
 			}
@@ -26,7 +27,7 @@ namespace KompresjaFraktalna {
         }
 
         /// <summary>
-        /// generuje domeny. wierszowo. zakladam ze width = k* side +1 i height = l * side +1 , k,l Naturalne.
+        /// generuje domeny. wierszowo. zakladam ze width = k* side +1 x height = l * side +1 , k,l Naturalne.
         /// </summary>
         /// <param name="side">dlugosc boku</param>
         /// <param name="width">szerokosc obszaru</param>
@@ -36,8 +37,8 @@ namespace KompresjaFraktalna {
 			Queue<Domain> domains = new Queue<Domain>();
 
             int j = 0;
-			for (int y = 0; y < height; y += side) {
-				for (int x = 0; x < width; x += side) {
+			for (int y = 0; y < height -1; y += side) {
+				for (int x = 0; x < width -1; x += side) {
 					Domain d = new Domain(++j, x, y, side + 1, side + 1, 0, 0, 0, 0);
 					domains.Enqueue(d);
 				}
@@ -46,7 +47,7 @@ namespace KompresjaFraktalna {
         }
 
         /// <summary>
-        /// generuje punkty interpolacji. zakladam ze width = k* side +1 i height = l * side +1 , k,l Naturalne.
+        /// generuje punkty interpolacji. zakladam ze width = k* side +1 x height = l * side +1 , k,l Naturalne.
         /// </summary>
         /// <param name="side">dlugosc boku</param>
         /// <param name="width">szerokosc obszaru</param>
@@ -60,6 +61,11 @@ namespace KompresjaFraktalna {
                     points.Enqueue(p);
                 }
             return points;
+        }
+
+        protected enum param {
+            a = 0,
+            k, d, l, e, g, h, m
         }
     }
 }

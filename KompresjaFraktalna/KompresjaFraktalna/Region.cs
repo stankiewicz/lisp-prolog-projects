@@ -3,14 +3,30 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace KompresjaFraktalna {
+    [Serializable]
     class Region: Rectangle {
 
-        private Double contractivityFactor;
+        private double contractivityFactor = Double.MaxValue;
 
-        public Double ContractivityFactor {
+        public double ContractivityFactor {
             get { return contractivityFactor; }
             set { contractivityFactor = value; }
         }
+
+        private Point domainPosition;
+
+        public Point DomainPosition {
+            get { return domainPosition; }
+            set { domainPosition = value; }
+        }
+
+        private double[] parameters;
+
+        public double[] Parameters {
+            get { return parameters; }
+            set { parameters = value; }
+        }
+
         
 
         private int depth;

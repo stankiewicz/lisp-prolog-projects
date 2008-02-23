@@ -29,12 +29,38 @@ namespace KompresjaFraktalna {
             get {
                 return new Point[] {
                     new Point(X,Y,_x00),
-                    new Point(X+Width,Y,_x01),
-                    new Point(X,Y+Height,_x10),
-                    new Point(X+Width,Y+Height,_x11)
+                    new Point(X+Width-1,Y,_x01),
+                    new Point(X,Y+Height-1,_x10),
+                    new Point(X+Width-1,Y+Height-1,_x11)
                 };
             }
         }
+
+        public int Left {
+            get {
+                return _x;
+            }
+        }
+
+        public int Right {
+            get {
+                return _x + _width - 1;
+            }
+        }
+
+        public int Top {
+            get {
+                return _y + _height -1;
+            }
+        }
+
+        public int Bottom {
+            get {
+                return _y;
+            }
+        }
+
+
         
         public int X {
             get { return _x; }
@@ -42,6 +68,10 @@ namespace KompresjaFraktalna {
         
         public int Y {
             get { return _y; }
+        }
+
+        public int Size {
+            get { return _width; }
         }
         
         public int Width {
