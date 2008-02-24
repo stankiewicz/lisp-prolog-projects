@@ -24,6 +24,10 @@ public class NodesTableModel extends AbstractTableModel {
 		this.nodes.addAll(nodes);
 	}
 	
+	public NodesTableModel() {
+		// TODO Auto-generated constructor stub
+	}
+
 	/* (non-Javadoc)
 	 * @see javax.swing.table.TableModel#getColumnCount()
 	 */
@@ -49,7 +53,7 @@ public class NodesTableModel extends AbstractTableModel {
 		Node node = nodes.get(row);
 		switch(col) {
 		case 0:
-			return node.getPageRank();
+			return node.getPageRank()== Double.MAX_VALUE?"Nieustalone":node.getPageRank();
 		case 1:
 			return node.getName();
 		case 2:
@@ -59,7 +63,7 @@ public class NodesTableModel extends AbstractTableModel {
 		case 4:
 			return node.getKeywords();
 		case 5:
-			return node.getPersonize();
+			return node.getPersonalize()== Double.MAX_VALUE?"Nieustalone":node.getPersonalize();
 		}
 		return null;
 	}
