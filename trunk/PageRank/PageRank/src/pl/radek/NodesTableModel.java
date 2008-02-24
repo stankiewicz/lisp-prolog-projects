@@ -18,7 +18,7 @@ public class NodesTableModel extends AbstractTableModel {
 	 */
 	private static final long serialVersionUID = -2432705830445647773L;
 	ArrayList<Node> nodes = new ArrayList<Node>();
-	String [] columns = new String [] { "Page Rank", "Nazwa", "Linki wychodz¹ce", "Linki wchodz¹ce", "S³owa kluczowe" , "Personalizacja"};
+	String [] columns = new String [] { "Page Rank", "Nazwa", "Linki wychodz¹ce", "Linki wchodz¹ce", "S³owa kluczowe" , "Personalizacja","Page Rank","Rank"};
 	public NodesTableModel(ArrayList<Node> nodes) {
 		
 		this.nodes.addAll(nodes);
@@ -64,6 +64,10 @@ public class NodesTableModel extends AbstractTableModel {
 			return node.getKeywords();
 		case 5:
 			return node.getPersonalize()== Double.MAX_VALUE?"Nieustalone":node.getPersonalize();
+		case 6:
+			return node.getPageRank()== Double.MAX_VALUE?"Nieustalone":node.getPageRank();
+		case 7:
+			return node.getRank()== Integer.MAX_VALUE?"Nieustalone":node.getRank();
 		}
 		return null;
 	}
