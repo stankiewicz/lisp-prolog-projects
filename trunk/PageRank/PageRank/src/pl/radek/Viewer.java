@@ -3,7 +3,6 @@
  */
 package pl.radek;
 
-import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -29,10 +28,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
-
-import org.omg.CORBA.Environment;
-
-import sun.awt.windows.ThemeReader;
 
 /**
  * @author Radek
@@ -182,7 +177,30 @@ public class Viewer extends JFrame {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		JMenuBar menuBar = new JMenuBar();
-		JMenu menu = new JMenu("File");
+		JMenu menuFile = new JMenu("Plik");
+		JMenu menuVisualize = new JMenu("Wizualizacja");
+		JMenuItem menuOpenFileItem = new JMenuItem("Otwórz");
+		menuOpenFileItem.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+		});
+		
+		JMenuItem menuSaveFileItem = new JMenuItem("Zapisz");
+		menuSaveFileItem.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+		});
+		
 		JMenuItem menuCloseVisualizeItem = new JMenuItem("Zamknij wizualizacje");
 		menuCloseVisualizeItem.addActionListener(new ActionListener() {
 			
@@ -222,10 +240,14 @@ public class Viewer extends JFrame {
 				System.exit(0);
 			}
 		});
-		menu.add(menuVisualizeItem);
-		menu.add(menuCloseVisualizeItem);
-		menu.add(menuItem);
-		menuBar.add(menu);
+		
+		menuVisualize.add(menuVisualizeItem);
+		menuVisualize.add(menuCloseVisualizeItem);
+		menuFile.add(menuOpenFileItem);
+		menuFile.add(menuSaveFileItem);
+		menuFile.add(menuItem);
+		menuBar.add(menuFile);
+		menuBar.add(menuVisualize);
 		setJMenuBar(menuBar);
 		System.out.println(getJPanel().getMinimumSize());
 		// this.setSize(getJPanel().getSize());
