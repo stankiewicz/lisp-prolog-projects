@@ -16,7 +16,7 @@ public class PowerMethodTestCase extends TestCase {
 	public void test1(){
 		GoogleMatrix gm = new GoogleMatrix();
 		
-		gm.setAlfa(0.6);
+		gm.setAlfa(0.8);
 		
 		double [][] s = new double [][] {
 				new double [] {0,1.0/2.0,0,1.0/2.0,0 },
