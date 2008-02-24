@@ -3,32 +3,22 @@
  */
 package pl.radek;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.geom.Rectangle2D;
 
-import javax.swing.BorderFactory;
-import javax.swing.JDesktopPane;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
-import javax.swing.JLayeredPane;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
-import java.awt.Dimension;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
-import javax.swing.JComboBox;
-import java.awt.FlowLayout;
-import java.awt.Insets;
-import java.awt.Rectangle;
-import java.awt.Point;
 import javax.swing.JTextField;
-import javax.swing.JButton;
 
 /**
  * @author Radek
@@ -38,6 +28,10 @@ public class Viewer extends JFrame {
 
 	
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 8502377759600889595L;
 	private JScrollPane stronyZPolaczeniami = null;
 	private JTable tabelaStronZPolaczeniami = null;
 	private JPanel jPanel = null;
@@ -66,9 +60,11 @@ public class Viewer extends JFrame {
 		menu.add(menuItem);
 		menuBar.add(menu);
 		setJMenuBar(menuBar);
-		
-
-		pack();
+		System.out.println(getJPanel().getMinimumSize());
+		//this.setSize(getJPanel().getSize());
+		//this.setPreferredSize(getJPanel().getSize());
+		//this.setMinimumSize(getJPanel().getSize());
+		//pack();
 		setVisible(true);
 		
 	}
@@ -79,7 +75,7 @@ public class Viewer extends JFrame {
 	 * 
 	 */
 	private void initialize() {
-        this.setSize(new Dimension(761, 512));
+        this.setSize(new Dimension(761, 612));
         this.setTitle("Viewer");
         this.setContentPane(getJPanel());
 			
@@ -287,7 +283,7 @@ public class Viewer extends JFrame {
 	 */
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		Viewer viewer= new Viewer();
+		new Viewer();
 	}
 
 }  //  @jve:decl-index=0:visual-constraint="51,29"
