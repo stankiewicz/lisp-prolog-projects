@@ -4,22 +4,38 @@ import java.util.ArrayList;
 
 public class Node {
 	String name;
-	double personize;
+	double personalize;
 	ArrayList<String> keywords;
 	ArrayList<Node> links;
 	double pageRank;
 	ArrayList<Node> incomingLinks;
+	
+	public Node() {
+		keywords = new ArrayList<String>();
+		incomingLinks = new ArrayList<Node>();
+		links = new ArrayList<Node>();
+		pageRank = Double.MAX_VALUE;
+		personalize = Double.MAX_VALUE;
+	
+	}
+	
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return name;
+	}
+
 	public String getName() {
 		return name;
 	}
 	public void setName(String name) {
 		this.name = name;
 	}
-	public double getPersonize() {
-		return personize;
+	public double getPersonalize() {
+		return personalize;
 	}
-	public void setPersonize(double personize) {
-		this.personize = personize;
+	public void setPersonalize(double personize) {
+		this.personalize = personize;
 	}
 	public ArrayList<String> getKeywords() {
 		return keywords;
