@@ -10,13 +10,23 @@ public class Node {
 	double pageRank;
 	ArrayList<Node> incomingLinks;
 	
+	int rank;
+	
+	public int getRank() {
+		return rank;
+	}
+
+	public void setRank(int rank) {
+		this.rank = rank;
+	}
+
 	public Node() {
 		keywords = new ArrayList<String>();
 		incomingLinks = new ArrayList<Node>();
 		links = new ArrayList<Node>();
 		pageRank = Double.MAX_VALUE;
 		personalize = Double.MAX_VALUE;
-	
+		rank = Integer.MAX_VALUE;
 	}
 	
 	@Override
