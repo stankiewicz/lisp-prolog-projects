@@ -29,6 +29,9 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 
+import pl.radek.computation.Method;
+import pl.radek.computation.PowerMethod;
+
 /**
  * @author Radek
  * 
@@ -57,14 +60,15 @@ public class Viewer extends JFrame {
 	private class procKiller extends Thread {
 		ProcessBuilder pb;
 		Process proc;
+
 		public procKiller(ProcessBuilder proc) {
 			this.pb = proc;
 
 		}
-		
+
 		public void killProc() {
 			proc.destroy();
-			
+
 		}
 
 		@Override
@@ -81,13 +85,13 @@ public class Viewer extends JFrame {
 			do {
 				try {
 					try {
-						this.sleep(1000);
+						Thread.sleep(1000);
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 					int i = proc.exitValue();
-					
+
 					System.out.println("returned: " + i);
 					return;
 				} catch (IllegalThreadStateException ex) {
@@ -97,13 +101,13 @@ public class Viewer extends JFrame {
 		}
 
 	}
+
 	private procKiller procKiller;
-	
-	
+
 	private void prepareFile() {
 		OutputStream stream = null;
 		File nodes = new File("run\\tmp.lua").getAbsoluteFile();
-		if(nodes.exists()==false) {
+		if (nodes.exists() == false) {
 			try {
 				nodes.createNewFile();
 			} catch (IOException e) {
@@ -112,7 +116,7 @@ public class Viewer extends JFrame {
 			}
 		}
 		try {
-			stream = new FileOutputStream(nodes,false);
+			stream = new FileOutputStream(nodes, false);
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -131,33 +135,33 @@ public class Viewer extends JFrame {
 			e.printStackTrace();
 		}
 	}
-	
+
 	private void writeFile(OutputStream stream) {
-		
+
 		StringBuffer sb = new StringBuffer();
-		Map<Node,String> map = new HashMap<Node, String>();
+		Map<Node, String> map = new HashMap<Node, String>();
 		int i = 0;
 		String fNewLine = System.getProperty("line.separator");
 		sb.append("n3d.begin_graph();");
 		sb.append(fNewLine);
-		for(Node node: nodes) {
+		for (Node node : nodes) {
 			String id = "id" + i;
 			i++;
 			map.put(node, id);
-			sb.append(id + "=n3d.add_node(\""+ node.name+ "\")");
+			sb.append(id + "=n3d.add_node(\"" + node.name + "\")");
 			sb.append(fNewLine);
 		}
-		for(Node node: nodes) {
+		for (Node node : nodes) {
 			String idFrom = map.get(node);
-			for(Node to: node.links) {
+			for (Node to : node.links) {
 				String idTo = map.get(to);
-				sb.append("n3d.add_edge_by_ids("+idFrom+","+idTo+")");
-				sb.append(fNewLine);			
-				
+				sb.append("n3d.add_edge_by_ids(" + idFrom + "," + idTo + ")");
+				sb.append(fNewLine);
+
 			}
-		
+
 		}
-		
+
 		sb.append("n3d.end_graph();");
 		sb.append(fNewLine);
 		try {
@@ -170,7 +174,40 @@ public class Viewer extends JFrame {
 			e.printStackTrace();
 		}
 	}
-	
+
+	private GoogleMatrix generateMatrix(ArrayList<Node> nodes) {
+		GoogleMatrix gm = new GoogleMatrix();
+		double[][] s = new double[nodes.size()][];
+		for (int row = 0; row < nodes.size(); ++row) {
+			s[row] = new double[nodes.size()];
+			for (int col = 0; col < nodes.size(); ++col)
+				s[row][col] = 0;
+			double num = nodes.get(row).links.size();
+			if (num == 0) {
+				for (int col = 0; col < nodes.size(); ++col)
+					s[row][col] = 1.0/nodes.size();
+			} else {
+				for (Node n : nodes.get(row).links) {
+					int idx = nodes.indexOf(n);
+					s[row][idx] = 1.0 / num;
+				}
+			}
+
+		}
+
+		double[] v = new double[nodes.size()];
+		// TODO
+		for (int i = 0; i < v.length; ++i) {
+			v[i] = 1.0 / v.length;
+		}
+
+		gm.setAlfa(0.85);
+		gm.setS(s);
+		gm.setV(v);
+
+		return gm;
+	}
+
 	public Viewer() {
 		super("viewer");
 		initialize();
@@ -179,59 +216,103 @@ public class Viewer extends JFrame {
 		JMenuBar menuBar = new JMenuBar();
 		JMenu menuFile = new JMenu("Plik");
 		JMenu menuVisualize = new JMenu("Wizualizacja");
+		JMenu menuRank = new JMenu("Page Rank");
+		JMenuItem menuCountRankItem = new JMenuItem("Przelicz ranking");
+		menuCountRankItem.addActionListener(new ActionListener() {
+
+			@SuppressWarnings("unchecked")
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				System.out.println("Przeliczam ranking");
+				ArrayList<Node> list = (ArrayList<Node>) nodes.clone();
+				GoogleMatrix gm = generateMatrix(list);
+
+				Method method = new PowerMethod();
+
+				double[] pageRank = method.computeEigenVector(gm);
+				if (pageRank.length != list.size()) {
+					System.out.println("dlugosc page rank sie nie zgadza");
+					return;
+				}
+
+				for (int i = 0; i < pageRank.length; ++i) {
+					list.get(i).setPageRank(pageRank[i]);
+				}
+
+				double max = 0;
+				int idx = 0;
+				int size = list.size();
+				for (int i = 0; i < size; ++i) {
+					max = 0;
+					for (int j = 0; j < list.size(); ++j) {
+						if (list.get(j).getPageRank() > max) {
+							max = list.get(j).getPageRank();
+							idx = j;
+						}
+					}
+					Node n = list.get(idx);
+					n.setRank(i + 1);
+					list.remove(n);
+				}
+				((NodesTableModel) getTabelaPolaczenZDanejStrony().getModel())
+						.fireTableDataChanged();
+
+				((NodesTableModel) getTabelaStronZPolaczeniami().getModel())
+						.fireTableDataChanged();
+
+			}
+
+		});
 		JMenuItem menuOpenFileItem = new JMenuItem("Otwórz");
 		menuOpenFileItem.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				
+
 			}
-			
+
 		});
-		
+
 		JMenuItem menuSaveFileItem = new JMenuItem("Zapisz");
 		menuSaveFileItem.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				
+
 			}
-			
+
 		});
-		
+
 		JMenuItem menuCloseVisualizeItem = new JMenuItem("Zamknij wizualizacje");
 		menuCloseVisualizeItem.addActionListener(new ActionListener() {
-			
 
 			public void actionPerformed(ActionEvent e) {
-				if(procKiller!=null) {
+				if (procKiller != null) {
 					procKiller.killProc();
 				}
-			
+
 			}
-		
+
 		});
 		JMenuItem menuVisualizeItem = new JMenuItem("Poka¿");
 		menuVisualizeItem.addActionListener(new ActionListener() {
-			
 
 			public void actionPerformed(ActionEvent e) {
 				prepareFile();
-				Process proc = null;
-				File f = new File("run\\").getAbsoluteFile();
 				File nodes = new File("run\\nodes3d.exe").getAbsoluteFile();
 				System.out.println("uruchamiam " + nodes);
-				ProcessBuilder pb = new ProcessBuilder(nodes.toString(),"tmp.lua");
-				
+				ProcessBuilder pb = new ProcessBuilder(nodes.toString(),
+						"tmp.lua");
+
 				pb.directory(new File("run\\").getAbsoluteFile());
 				procKiller = new procKiller(pb);
-					procKiller.start();
-				//} catch (IOException e1) {
-				//	// TODO Auto-generated catch block
-				//	e1.printStackTrace();
-				//}
+				procKiller.start();
+				// } catch (IOException e1) {
+				// // TODO Auto-generated catch block
+				// e1.printStackTrace();
+				// }
 			}
 		});
 		JMenuItem menuItem = new JMenuItem("Exit");
@@ -240,7 +321,7 @@ public class Viewer extends JFrame {
 				System.exit(0);
 			}
 		});
-		
+		menuRank.add(menuCountRankItem);
 		menuVisualize.add(menuVisualizeItem);
 		menuVisualize.add(menuCloseVisualizeItem);
 		menuFile.add(menuOpenFileItem);
@@ -248,6 +329,7 @@ public class Viewer extends JFrame {
 		menuFile.add(menuItem);
 		menuBar.add(menuFile);
 		menuBar.add(menuVisualize);
+		menuBar.add(menuRank);
 		setJMenuBar(menuBar);
 		System.out.println(getJPanel().getMinimumSize());
 		// this.setSize(getJPanel().getSize());
@@ -338,9 +420,9 @@ public class Viewer extends JFrame {
 						return;
 					System.out.println("####wybrano strone "
 							+ wyborStrony.getSelectedItem()); // TODO
-																// Auto-generated
-																// Event stub
-																// actionPerformed()
+					// Auto-generated
+					// Event stub
+					// actionPerformed()
 
 					getTabelaPolaczenZDanejStrony().setModel(
 							new NodesTableModel(((Node) wyborStrony
