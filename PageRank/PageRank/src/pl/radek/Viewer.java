@@ -221,7 +221,7 @@ public class Viewer extends JFrame {
 		menuCountRankItem.addActionListener(new ActionListener() {
 
 			@SuppressWarnings("unchecked")
-			@Override
+			
 			public void actionPerformed(ActionEvent e) {
 				System.out.println("Przeliczam ranking");
 				ArrayList<Node> list = (ArrayList<Node>) nodes.clone();
@@ -266,7 +266,7 @@ public class Viewer extends JFrame {
 		JMenuItem menuOpenFileItem = new JMenuItem("Otwórz");
 		menuOpenFileItem.addActionListener(new ActionListener() {
 
-			@Override
+			
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
 
@@ -277,7 +277,7 @@ public class Viewer extends JFrame {
 		JMenuItem menuSaveFileItem = new JMenuItem("Zapisz");
 		menuSaveFileItem.addActionListener(new ActionListener() {
 
-			@Override
+			
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
 
