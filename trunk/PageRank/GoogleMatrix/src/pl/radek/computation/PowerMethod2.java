@@ -16,7 +16,7 @@ public class PowerMethod2 implements Method {
 	 * 
 	 * @see pl.radek.computation.IComputation#computeEigenVector(pl.radek.GoogleMatrix)
 	 */
-	@Override
+	
 	public double[] computeEigenVector(GoogleMatrix matrix) {
 		// TODO Auto-generated method stub
 		double epsilon = Math.pow(10, -8);
