@@ -31,7 +31,7 @@ public class NodesTableModel extends AbstractTableModel {
 	/* (non-Javadoc)
 	 * @see javax.swing.table.TableModel#getColumnCount()
 	 */
-	@Override
+	
 	public int getColumnCount() {
 		return columns.length;
 	}
@@ -39,7 +39,7 @@ public class NodesTableModel extends AbstractTableModel {
 	/* (non-Javadoc)
 	 * @see javax.swing.table.TableModel#getRowCount()
 	 */
-	@Override
+	
 	public int getRowCount() {
 		
 		return nodes.size();
@@ -48,7 +48,7 @@ public class NodesTableModel extends AbstractTableModel {
 	/* (non-Javadoc)
 	 * @see javax.swing.table.TableModel#getValueAt(int, int)
 	 */
-	@Override
+	
 	public Object getValueAt(int row, int col) {
 		Node node = nodes.get(row);
 		switch(col) {
