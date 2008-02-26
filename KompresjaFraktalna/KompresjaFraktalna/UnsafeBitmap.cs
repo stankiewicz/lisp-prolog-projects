@@ -24,7 +24,7 @@ namespace KompresjaFraktalna {
             } else if (bitmap.PixelFormat == PixelFormat.Format32bppArgb) {
                 pixels = 4;
             } else {
-                throw new StackOverflowException();
+				throw new ArgumentException();
             }
         }
 
