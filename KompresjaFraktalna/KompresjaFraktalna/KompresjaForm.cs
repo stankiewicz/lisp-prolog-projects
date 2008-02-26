@@ -10,7 +10,6 @@ namespace KompresjaFraktalna {
     public partial class KompresjaForm : Form {
 
 		Bitmap imageToCompress;
-        byte[] compressedImage;
 
         public KompresjaForm() {
             InitializeComponent();
@@ -25,10 +24,10 @@ namespace KompresjaFraktalna {
                 string file = this.openFileDialog1.FileName;
 
 				//utworzenie bitmapy o odpowiednim rozmiarze (n*delta+1)
-				Bitmap bmp = new Bitmap(file);				
+				Bitmap bmp = new Bitmap(file);
 				int newWidth = getNewSize(bmp.Width);
 				int newHeight = getNewSize(bmp.Height);
-				imageToCompress = new Bitmap(newWidth, newHeight);
+				imageToCompress = new Bitmap(newWidth, newHeight, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
 
 				Graphics g = Graphics.FromImage(imageToCompress);
 				g.Clear(Color.White);
@@ -96,51 +95,46 @@ namespace KompresjaFraktalna {
 
 			Console.WriteLine("Image data ready");
 
-			System.IO.MemoryStream memoryStream = new System.IO.MemoryStream();
+			ChannelData redChannel, blueChannel, greenChannel;
 
 			Console.WriteLine("Compressing red channel");
-            compressor.Compress(colorR, memoryStream);
+            redChannel = compressor.Compress(colorR);
 			Console.WriteLine("Red channel compressed");
 
 			Console.WriteLine("Compressing green channel");
-            compressor.Compress(colorG, memoryStream);
+			greenChannel = compressor.Compress(colorG);
 			Console.WriteLine("Green channel compressed");
 
 			Console.WriteLine("Compressing blue channel");
-            compressor.Compress(colorB, memoryStream);
+			blueChannel = compressor.Compress(colorB);
 			Console.WriteLine("Blue channel compressed");
 
-            //memoryStream.Flush();
-            compressedImage = memoryStream.ToArray();
-
-			Console.WriteLine("Compressed channels:");
-            System.Console.Out.Write(compressedImage);
-			Console.WriteLine("Compressed channels end");
-
-            //memoryStream.Position = 0;
-
+			
 			Console.WriteLine("Decompressing image data");
-            Decompressor decompressor = new Decompressor();
+            
+			Decompressor decompressor = new Decompressor();
 
 			Console.WriteLine("Decompressing red channel");
-            colorR = decompressor.Decompress(memoryStream);
+            colorR = decompressor.Decompress(redChannel);
 			Console.WriteLine("Red channel decompressed");
 
             this.backgroundWorker1.ReportProgress(75);
 
 			Console.WriteLine("Decompressing green channel");
-            colorG = decompressor.Decompress(memoryStream);
+            colorG = decompressor.Decompress(greenChannel);
 			Console.WriteLine("Green channel decompressed");
 
             this.backgroundWorker1.ReportProgress(80);
 
 			Console.WriteLine("Decompressing blue channel");
-            colorB = decompressor.Decompress(memoryStream);
+            colorB = decompressor.Decompress(blueChannel);
 			Console.WriteLine("Blue channel decompressed");
 
             this.backgroundWorker1.ReportProgress(85);
 
-			UnsafeBitmap unsafeBitmap = new UnsafeBitmap(colorB.GetLength(0), colorB.GetLength(1));
+			Console.WriteLine("Tworzenie koñcowej bitmapy");
+			Bitmap bmp = new Bitmap(colorB.GetLength(0), colorB.GetLength(1), System.Drawing.Imaging.PixelFormat.Format24bppRgb);
+			UnsafeBitmap unsafeBitmap = new UnsafeBitmap(bmp);
 			unsafeBitmap.LockBitmap();
 
 			for (int i = 0; i < unsafeBitmap.Width; ++i) {
@@ -151,8 +145,9 @@ namespace KompresjaFraktalna {
             }
 			unsafeBitmap.UnlockBitmap();
 
+			Console.WriteLine("Tworzenie koñcowej bitmapy zakoñczone");
+
 			pictureBox2.Image = unsafeBitmap.Bitmap;
-			pictureBox2.Refresh();
         }
 
         private void przerToolStripMenuItem_Click(object sender, EventArgs e) {
@@ -166,11 +161,13 @@ namespace KompresjaFraktalna {
         }
 
         private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e) {
+			Console.WriteLine("Kompresja zakoñczona");
             if (e.Error != null) {
                 MessageBox.Show(e.Error.Message);
                 System.Console.Out.WriteLine(e.Error.Message);
             }
             this.statusStrip1.Visible = false;
+			pictureBox2.Refresh();
         }
 
 		private int getNewSize(int oldSize) {

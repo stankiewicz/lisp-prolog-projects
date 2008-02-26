@@ -35,7 +35,7 @@ namespace KompresjaFraktalna {
         /// </summary>
         /// <param name="bitmap">tablica z wartosciami skladowej koloru</param>
         /// <param name="outputStream">strumien do ktorego zostanie zapisane wszystko</param>
-        public void Compress(int[,] bitmap, System.IO.Stream outputStream) {
+        public ChannelData Compress(int[,] bitmap) {
 			/*
 			 * realizacja algorytmu ze strony 6.
 			 */
@@ -73,6 +73,7 @@ namespace KompresjaFraktalna {
 
 			#endregion
 
+			Console.WriteLine("Start kompresji");
 			do {
 				#region Step 3)
 				/*
@@ -243,13 +244,12 @@ namespace KompresjaFraktalna {
 
 				#endregion
 			} while (true);
+			Console.WriteLine("Koniec kompresji");
 
 			#region Step 5)
 			//store dmax, delta, Delta, cqueue, iqueue, aqueue
 
-			Console.WriteLine("Zapisywanie danych");
-
-            SuperFajnaKlasa sfk = new SuperFajnaKlasa();
+            ChannelData sfk = new ChannelData();
             sfk.Height = bitmap.GetLength(1);
             sfk.Width = bitmap.GetLength(0);
             sfk.InterpolationPoints = iqueue.ToArray();
@@ -257,10 +257,8 @@ namespace KompresjaFraktalna {
             sfk.BigDelta = _Delta;
             sfk.DMax = _dMax;
             sfk.Regions = _regions.ToArray();
-			
-            sfk.Save(outputStream);
+			return sfk;
 
-			Console.WriteLine("Zapisywanie danych zakoñczone");
 			#endregion
         }
 

@@ -23,8 +23,8 @@ namespace KompresjaFraktalna {
                 pixels = 3;
             } else if (bitmap.PixelFormat == PixelFormat.Format32bppArgb) {
                 pixels = 4;
-            } else {
-				throw new ArgumentException();
+			} else {
+				throw new Exception("Nieobs³ugiwany format bitmapy: " + bitmap.PixelFormat);
             }
         }
 
