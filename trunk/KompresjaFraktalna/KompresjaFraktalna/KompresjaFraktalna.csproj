@@ -41,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Address.cs" />
+    <Compile Include="ChannelData.cs" />
     <Compile Include="Common.cs" />
     <Compile Include="Compression.cs" />
     <Compile Include="Compression.Designer.cs">
@@ -91,7 +92,6 @@
     </Compile>
     <Compile Include="Rectangle.cs" />
     <Compile Include="Region.cs" />
-    <Compile Include="SuperFajnaKlasa.cs" />
     <Compile Include="UnsafeBitmap.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

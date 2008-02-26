@@ -5,7 +5,7 @@ using System.Text;
 namespace KompresjaFraktalna {
     class Decompressor : Common {
 
-        public int[,] Decompress(System.IO.Stream inputStream) {
+        public int[,] Decompress(ChannelData sfk) {
             int _delta;
             int _Delta;
             int _dMax;
@@ -13,7 +13,6 @@ namespace KompresjaFraktalna {
             Queue<Region> _regions;
 
             int width, height;
-            SuperFajnaKlasa sfk = SuperFajnaKlasa.Restore(inputStream);
 
             width = sfk.Width;
             height = sfk.Height;

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace KompresjaFraktalna {
     [Serializable]
-    class SuperFajnaKlasa {
+    class ChannelData {
         private Region[] regions;
 
         public Region [] Regions {
@@ -51,19 +51,6 @@ namespace KompresjaFraktalna {
         public int DMax {
             get { return dMax; }
             set { dMax = value; }
-        }
-
-        public void Save(System.IO.Stream stream) {
-
-            System.Runtime.Serialization.IFormatter formatter = new System.Runtime.Serialization.Formatters.Soap.SoapFormatter();
-            formatter.Serialize(stream, this);
-        }
-
-        public static SuperFajnaKlasa Restore(System.IO.Stream stream) {
-            System.Runtime.Serialization.IFormatter formatter = new System.Runtime.Serialization.Formatters.Soap.SoapFormatter();
-            SuperFajnaKlasa restored = (SuperFajnaKlasa)formatter.Deserialize(stream);
-
-            return restored;
         }
     }
 }
