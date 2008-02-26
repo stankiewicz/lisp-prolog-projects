@@ -53,9 +53,6 @@ namespace KompresjaFraktalna {
             set { dMax = value; }
         }
 
-	
-
-
         public void Save(System.IO.Stream stream) {
 
             System.Runtime.Serialization.IFormatter formatter = new System.Runtime.Serialization.Formatters.Soap.SoapFormatter();
@@ -68,9 +65,5 @@ namespace KompresjaFraktalna {
 
             return restored;
         }
-
-
-
-
     }
 }

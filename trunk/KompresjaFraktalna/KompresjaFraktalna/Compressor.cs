@@ -6,18 +6,31 @@ namespace KompresjaFraktalna {
     class Compressor : Common {
 
         int[,] bitmap;
-        int _delta;
-        int _Delta;
-        int _a;
-        double _epsilon;
-        double _epsilonHIJ = 50;
-
-
         
+		double _epsilonHIJ = 50;
+		int _delta;
+		int _Delta;
+		int _a;
+		double _epsilon;
+		int _dMax;
 
+		public Compressor() {
+			#region Step 1)
+			/*
+             * Punkt 1. choose values for delta and Delta, such that Delta = a * delta. 
+             * Choose also, error tolerance Epsilon and maximum depth Dmax.
+             */
+			#endregion
 
-        int _dMax;
-        /// <summary>
+			_epsilonHIJ = 50;
+			_delta = Compression.Default.SmallDelta;
+			_Delta = Compression.Default.BigDelta;
+			_a = _Delta / _delta;
+			_epsilon = Compression.Default.Epsilon;
+			_dMax = Compression.Default.Dmax;
+		}
+
+		/// <summary>
         /// Kompresja jednej skladowej koloru.
         /// </summary>
         /// <param name="bitmap">tablica z wartosciami skladowej koloru</param>
@@ -30,20 +43,6 @@ namespace KompresjaFraktalna {
 			int width = bitmap.GetLength(0);
 			int height = bitmap.GetLength(1);
 
-			#region Step 1)
-			/*
-             * Punkt 1. choose values for delta and Delta, such that Delta = a * delta. 
-             * Choose also, error tolerance Epsilon and maximum depth Dmax.
-             */
-
-            int _delta = Compression.Default.SmallDelta;
-            int _Delta = Compression.Default.BigDelta;
-            int _a = _Delta / _delta;
-            double _epsilon = Compression.Default.Epsilon;
-            int _dMax = Compression.Default.Dmax;
-			#endregion
-
-
 			#region Step 2)
 			/*
              * punkt 2. create two queues, one named 'squeue' and put all the regions inside as well 
@@ -52,9 +51,13 @@ namespace KompresjaFraktalna {
              * the first and the addresses in the latter). set the depth d = 1 and create queue named 'squeue2'.
              */
 
+			Console.WriteLine("Generowanie regionów");
             Queue<Region> squeue = GenerateRegions(_delta, width, height);
-            
+
+			Console.WriteLine("Generowanie punktów interpolacji");
 			Queue<Point> iqueue = GenerateInterpolationPoints(_delta, width, height);
+
+			Console.WriteLine("Inicjowanie kolejek i tablicy regionów");
 			Queue<double> cqueue = new Queue<double>();
 			Queue<Address> aqueue = new Queue<Address>();
 			Queue<Region> squeue2 = new Queue<Region>();
@@ -64,6 +67,8 @@ namespace KompresjaFraktalna {
             foreach (Region reg in squeue) {
                 regions[reg.Left, reg.Bottom] = reg;
             }
+
+			Console.WriteLine("Generowanie domen");
 			Queue<Domain> domains = GenerateDomains(_Delta, width, height);
 
 			#endregion
@@ -242,6 +247,8 @@ namespace KompresjaFraktalna {
 			#region Step 5)
 			//store dmax, delta, Delta, cqueue, iqueue, aqueue
 
+			Console.WriteLine("Zapisywanie danych");
+
             SuperFajnaKlasa sfk = new SuperFajnaKlasa();
             sfk.Height = bitmap.GetLength(1);
             sfk.Width = bitmap.GetLength(0);
@@ -252,6 +259,8 @@ namespace KompresjaFraktalna {
             sfk.Regions = _regions.ToArray();
 			
             sfk.Save(outputStream);
+
+			Console.WriteLine("Zapisywanie danych zakoñczone");
 			#endregion
         }
 
