@@ -34,14 +34,16 @@ namespace KompresjaFraktalna {
             double logdelta = Math.Log(_delta);
             double logA = Math.Log(a);
             int steps = (int)Math.Truncate(logdelta / logA);
+			steps = Math.Abs(steps);
 
             //posortowaæ kolejkê
             for (int step = 1; step <= steps; step++) {
                 foreach (Region r in _regions) {
                     if (r.Depth > step) continue;
-                    Point domainAddress = r.DomainPosition;
+					int domainX = r.Domain.Left;
+					int domainY = r.Domain.Bottom;
                     double[] parameters = r.Parameters;
-                    Domain domain = new Domain(-1, domainAddress.X, domainAddress.Y, _Delta + 1, _Delta + 1, 0, 0, 0, 0);
+                    Domain domain = new Domain(-1, domainX, domainY, _Delta + 1, _Delta + 1, 0, 0, 0, 0);
 
                     double factor = r.ContractivityFactor;
                     int krok = (int)(_delta / (Math.Pow(a, step - 1)));
@@ -56,7 +58,7 @@ namespace KompresjaFraktalna {
             for (int x = domain.Left; x <= domain.Right; x += krok) {
                 for (int y = domain.Bottom; y <= domain.Top; y += krok) {
 
-                    Point mapped = mapPoint(new Point(x, y), region.Parameters, region.ContractivityFactor);
+                    Point mapped = mapPoint(new Point(x, y, bitmap[x,y]), region.Parameters, region.ContractivityFactor);
                     bitmap[mapped.X, mapped.Y] = mapped.Z;
                 }
             }
@@ -71,7 +73,5 @@ namespace KompresjaFraktalna {
 
             return new Point((int)xm, (int)ym, (int)zm);
         }
-
-
     }
 }
