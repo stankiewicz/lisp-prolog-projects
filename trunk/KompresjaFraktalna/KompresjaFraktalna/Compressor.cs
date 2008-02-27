@@ -107,7 +107,7 @@ namespace KompresjaFraktalna {
                         if (Math.Abs(contractivityFactor) >= 1 && !firstRun) {
                             continue;
                         }
-                        region.ContractivityFactor = contractivityFactor;
+                        //region.ContractivityFactor = contractivityFactor;
                         if (CheckConditionOfContinuity(domain, region,regions,_delta) == false && !firstRun) {
                             continue;
                         }
@@ -230,6 +230,8 @@ namespace KompresjaFraktalna {
                         region.ContractivityFactor = minimum.ContractivityFactor;
                         region.Parameters = minimum.OtherParameters;
                         _regions.Enqueue(region);
+                        region = null;
+                        minimum = null;
                     }
 				}
 
@@ -294,7 +296,7 @@ namespace KompresjaFraktalna {
         private bool TryMapDomainToRegion(Domain domain, Region region, double s, int[,] bitmap, out double[] parameters) {
 
             parameters = new double[8];
-            parameters[(int)param.a] = ((double)region.Size - 1.0) / ((double)domain.Size - 1);
+            parameters[(int)param.a] = ((double)region.Size-1) / ((double)domain.Size-1);
             parameters[(int)param.k] = region.X - domain.X * parameters[(int)param.a];
             parameters[(int)param.d] = parameters[(int)param.a];
             parameters[(int)param.l] = region.Y - domain.Y * parameters[(int)param.a];
