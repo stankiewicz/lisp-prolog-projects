@@ -46,8 +46,8 @@ namespace KompresjaFraktalna {
                     Domain domain = new Domain(-1, domainX, domainY, _Delta + 1, _Delta + 1, 0, 0, 0, 0);
 
                     double factor = r.ContractivityFactor;
-                    int krok = (int)(_delta / (Math.Pow(a, step - 1)));
-                    Map(krok, domain, r, image);
+                    int krok = (int)((double)_delta / (Math.Pow(a, -(step - 1))));
+                    Map(krok, r.Domain, r, image);
 
                 }
             }

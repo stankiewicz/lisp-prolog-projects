@@ -107,7 +107,7 @@ namespace KompresjaFraktalna {
                         if (Math.Abs(contractivityFactor) >= 1 && !firstRun) {
                             continue;
                         }
-                        //region.ContractivityFactor = contractivityFactor;
+                        region.ContractivityFactor = contractivityFactor;
                         if (CheckConditionOfContinuity(domain, region,regions,_delta) == false && !firstRun) {
                             continue;
                         }
