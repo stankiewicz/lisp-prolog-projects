@@ -54,11 +54,47 @@ namespace KompresjaFraktalna {
             return image;
         }
 
+
+        private bool TryMapDomainToRegion(Domain domain, Region region, double s, int[,] bitmap, out double[] parameters) {
+
+            parameters = new double[8];
+            parameters[(int)param.a] = ((double)region.Size - 1) / ((double)domain.Size - 1);
+            parameters[(int)param.k] = region.X - domain.X * parameters[(int)param.a];
+            parameters[(int)param.d] = parameters[(int)param.a];
+            parameters[(int)param.l] = region.Y - domain.Y * parameters[(int)param.a];
+            double[] B = new double[4];
+            double[,] A = new double[,] { 
+                  { domain.Left, domain.Bottom, domain.Left * domain.Bottom, 1, bitmap[region.Left, region.Bottom] - s * bitmap[domain.Left, domain.Bottom] },
+                  { domain.Right, domain.Bottom, (domain.Right)*(domain.Bottom), 1, bitmap[region.Right, region.Bottom] - s * bitmap[domain.Right, domain.Bottom]},
+                  { domain.Left, domain.Top, domain.Left*(domain.Top), 1, bitmap[region.Left, region.Top] - s * bitmap[domain.Left, domain.Top]},
+                  { domain.Right, domain.Top, (domain.Right)*(domain.Top), 1, bitmap[region.Right, region.Top] - s * bitmap[domain.Right, domain.Top]}
+           };
+            if (LinearEquationSolver.GaussianElimination(A, B)) {
+                parameters[(int)param.e] = B[0];
+                parameters[(int)param.g] = B[1];
+                parameters[(int)param.h] = B[2];
+                parameters[(int)param.m] = B[3];
+                return true;
+            } else
+                throw new Exception("Macierz osobliwa");
+
+
+
+
+        }
+
         private void Map(int krok, Domain domain, Region region, int[,] bitmap) {
+
+            double[] parameters;
+
+            if (TryMapDomainToRegion(domain, region, region.ContractivityFactor, bitmap, out parameters) == false) {
+                throw new NotImplementedException("dupa bladaa");
+            }
+
             for (int x = domain.Left; x <= domain.Right; x += krok) {
                 for (int y = domain.Bottom; y <= domain.Top; y += krok) {
 
-                    Point mapped = mapPoint(new Point(x, y, bitmap[x,y]), region.Parameters, region.ContractivityFactor);
+                    Point mapped = mapPoint(new Point(x, y, bitmap[x, y]), parameters, region.ContractivityFactor);
                     bitmap[mapped.X, mapped.Y] = mapped.Z;
                 }
             }
