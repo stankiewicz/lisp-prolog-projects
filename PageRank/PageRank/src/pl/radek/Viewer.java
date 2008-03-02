@@ -15,8 +15,10 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -39,6 +41,8 @@ import pl.radek.computation.PowerMethod;
 public class Viewer extends JFrame {
 
 	private final ArrayList<Node> nodes = new ArrayList<Node>();
+	
+	
 
 	/**
 	 * 
@@ -57,6 +61,21 @@ public class Viewer extends JFrame {
 	private JButton dodajPolaczenie = null;
 	private JButton usun = null;
 
+	private String [] kw = new String[] {
+			"k1","k2","k3","k4","k5"
+	};
+	
+	private ArrayList<String> generateRandomKeywordList(){
+		ArrayList<String> list = new ArrayList<String>();
+		Random r = new Random(new GregorianCalendar().getTimeInMillis());
+		for(String s:kw) {
+			if(r.nextBoolean()) {
+				list.add(s);
+			}
+		}		
+		return list;
+	}
+	
 	private class procKiller extends Thread {
 		ProcessBuilder pb;
 		Process proc;
@@ -103,6 +122,10 @@ public class Viewer extends JFrame {
 	}
 
 	private procKiller procKiller;
+
+
+
+	private JTextField keywords;
 
 	private void prepareFile() {
 		OutputStream stream = null;
@@ -174,6 +197,35 @@ public class Viewer extends JFrame {
 			e.printStackTrace();
 		}
 	}
+	
+	private double [] generatePersonalizationVector(ArrayList<Node> nodes) {
+		String keywords = getKeywords().getText();
+		keywords = keywords.trim();
+		keywords = keywords.replaceAll("  ", " ");
+		keywords = keywords.replaceAll("  ", " ");
+		String [] kw = keywords.split(" ");
+		double [] v = new double [nodes.size()];
+		double sum = 0;
+		for(int i = 0;i<v.length;++i) {
+			Node node = nodes.get(i);
+			for(String key:kw) {
+				if(node.getKeywords().contains(key)) {
+					++v[i];
+					sum++;
+				}
+			}
+		}
+		if(sum == 0) {
+			for (int i = 0; i < v.length; ++i) {
+				v[i] = 1.0 / v.length;
+			}
+		}else {
+			for (int i = 0; i < v.length; ++i) {
+				v[i] /=sum;
+			}
+		}
+		return v;
+	}
 
 	private GoogleMatrix generateMatrix(ArrayList<Node> nodes) {
 		GoogleMatrix gm = new GoogleMatrix();
@@ -195,12 +247,12 @@ public class Viewer extends JFrame {
 
 		}
 
-		double[] v = new double[nodes.size()];
+		double[] v;// = new double[nodes.size()];
 		// TODO
-		for (int i = 0; i < v.length; ++i) {
-			v[i] = 1.0 / v.length;
-		}
-
+		//for (int i = 0; i < v.length; ++i) {
+		//	v[i] = 1.0 / v.length;
+		//}
+		v = generatePersonalizationVector(nodes);
 		gm.setAlfa(0.85);
 		gm.setS(s);
 		gm.setV(v);
@@ -396,12 +448,21 @@ public class Viewer extends JFrame {
 			jPanel.add(getPolaczeniaZDanejStrony(), null);
 			jPanel.add(getNazwaStrony(), null);
 			jPanel.add(getDodajStrone(), null);
+			jPanel.add(getKeywords(), null);
 			jPanel.add(getOdCombo(), null);
 			jPanel.add(getDoCombo(), null);
 			jPanel.add(getDodajPolaczenie(), null);
 			jPanel.add(getUsun(), null);
 		}
 		return jPanel;
+	}
+
+	private JTextField getKeywords() {
+		if (keywords == null) {
+			keywords = new JTextField();
+			keywords.setBounds(new Rectangle(350, 28, 249, 20));
+		}
+		return keywords;
 	}
 
 	/**
@@ -513,6 +574,7 @@ public class Viewer extends JFrame {
 
 					Node newNode = new Node();
 					newNode.setName(getNazwaStrony().getText());
+					newNode.setKeywords(generateRandomKeywordList());
 					nodes.add(newNode);
 
 					fillWithData();
