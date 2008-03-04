@@ -36,19 +36,19 @@ namespace KompresjaFraktalna {
 			this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
 			this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
-			this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-			this.pictureBox1 = new System.Windows.Forms.PictureBox();
-			this.pictureBox2 = new System.Windows.Forms.PictureBox();
+			this.input = new System.Windows.Forms.PictureBox();
+			this.output = new System.Windows.Forms.PictureBox();
 			this.backgroundWorker = new System.ComponentModel.BackgroundWorker();
 			this.statusStrip1 = new System.Windows.Forms.StatusStrip();
 			this.toolStripProgressBar1 = new System.Windows.Forms.ToolStripProgressBar();
+			this.domains = new System.Windows.Forms.Panel();
+			this.regions = new System.Windows.Forms.Panel();
+			this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
 			this.menuStrip1.SuspendLayout();
-			this.splitContainer1.Panel1.SuspendLayout();
-			this.splitContainer1.Panel2.SuspendLayout();
-			this.splitContainer1.SuspendLayout();
-			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
-			((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.input)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.output)).BeginInit();
 			this.statusStrip1.SuspendLayout();
+			this.tableLayoutPanel1.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// menuStrip1
@@ -58,7 +58,7 @@ namespace KompresjaFraktalna {
             this.aboutToolStripMenuItem});
 			this.menuStrip1.Location = new System.Drawing.Point(0, 0);
 			this.menuStrip1.Name = "menuStrip1";
-			this.menuStrip1.Size = new System.Drawing.Size(747, 24);
+			this.menuStrip1.Size = new System.Drawing.Size(775, 24);
 			this.menuStrip1.TabIndex = 0;
 			this.menuStrip1.Text = "menuStrip1";
 			// 
@@ -152,46 +152,25 @@ namespace KompresjaFraktalna {
 			this.openFileDialog1.FileName = "openFileDialog1";
 			this.openFileDialog1.Filter = "all|*.*|pictures|*.jpg;*.png;*.bmp";
 			// 
-			// splitContainer1
+			// input
 			// 
-			this.splitContainer1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-						| System.Windows.Forms.AnchorStyles.Left)));
-			this.splitContainer1.IsSplitterFixed = true;
-			this.splitContainer1.Location = new System.Drawing.Point(0, 24);
-			this.splitContainer1.Name = "splitContainer1";
+			this.input.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.input.Location = new System.Drawing.Point(3, 3);
+			this.input.Name = "input";
+			this.input.Size = new System.Drawing.Size(100, 100);
+			this.input.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
+			this.input.TabIndex = 0;
+			this.input.TabStop = false;
 			// 
-			// splitContainer1.Panel1
+			// output
 			// 
-			this.splitContainer1.Panel1.AutoScroll = true;
-			this.splitContainer1.Panel1.Controls.Add(this.pictureBox1);
-			// 
-			// splitContainer1.Panel2
-			// 
-			this.splitContainer1.Panel2.AutoScroll = true;
-			this.splitContainer1.Panel2.Controls.Add(this.pictureBox2);
-			this.splitContainer1.Size = new System.Drawing.Size(992, 447);
-			this.splitContainer1.SplitterDistance = 490;
-			this.splitContainer1.TabIndex = 1;
-			// 
-			// pictureBox1
-			// 
-			this.pictureBox1.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.pictureBox1.Location = new System.Drawing.Point(0, 0);
-			this.pictureBox1.Name = "pictureBox1";
-			this.pictureBox1.Size = new System.Drawing.Size(490, 447);
-			this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
-			this.pictureBox1.TabIndex = 0;
-			this.pictureBox1.TabStop = false;
-			// 
-			// pictureBox2
-			// 
-			this.pictureBox2.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.pictureBox2.Location = new System.Drawing.Point(0, 0);
-			this.pictureBox2.Name = "pictureBox2";
-			this.pictureBox2.Size = new System.Drawing.Size(498, 447);
-			this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
-			this.pictureBox2.TabIndex = 0;
-			this.pictureBox2.TabStop = false;
+			this.output.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.output.Location = new System.Drawing.Point(390, 3);
+			this.output.Name = "output";
+			this.output.Size = new System.Drawing.Size(100, 100);
+			this.output.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
+			this.output.TabIndex = 0;
+			this.output.TabStop = false;
 			// 
 			// backgroundWorker
 			// 
@@ -204,9 +183,9 @@ namespace KompresjaFraktalna {
 			// 
 			this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripProgressBar1});
-			this.statusStrip1.Location = new System.Drawing.Point(0, 474);
+			this.statusStrip1.Location = new System.Drawing.Point(0, 666);
 			this.statusStrip1.Name = "statusStrip1";
-			this.statusStrip1.Size = new System.Drawing.Size(747, 22);
+			this.statusStrip1.Size = new System.Drawing.Size(775, 22);
 			this.statusStrip1.TabIndex = 2;
 			this.statusStrip1.Text = "statusStrip1";
 			// 
@@ -215,13 +194,45 @@ namespace KompresjaFraktalna {
 			this.toolStripProgressBar1.Name = "toolStripProgressBar1";
 			this.toolStripProgressBar1.Size = new System.Drawing.Size(100, 16);
 			// 
+			// domains
+			// 
+			this.domains.Location = new System.Drawing.Point(3, 324);
+			this.domains.Name = "domains";
+			this.domains.Size = new System.Drawing.Size(100, 100);
+			this.domains.TabIndex = 3;
+			// 
+			// regions
+			// 
+			this.regions.Location = new System.Drawing.Point(390, 324);
+			this.regions.Name = "regions";
+			this.regions.Size = new System.Drawing.Size(100, 100);
+			this.regions.TabIndex = 4;
+			// 
+			// tableLayoutPanel1
+			// 
+			this.tableLayoutPanel1.ColumnCount = 2;
+			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+			this.tableLayoutPanel1.Controls.Add(this.input, 0, 0);
+			this.tableLayoutPanel1.Controls.Add(this.regions, 1, 1);
+			this.tableLayoutPanel1.Controls.Add(this.domains, 0, 1);
+			this.tableLayoutPanel1.Controls.Add(this.output, 1, 0);
+			this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 24);
+			this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+			this.tableLayoutPanel1.RowCount = 2;
+			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+			this.tableLayoutPanel1.Size = new System.Drawing.Size(775, 642);
+			this.tableLayoutPanel1.TabIndex = 5;
+			// 
 			// KompresjaForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(747, 496);
+			this.ClientSize = new System.Drawing.Size(775, 688);
+			this.Controls.Add(this.tableLayoutPanel1);
 			this.Controls.Add(this.statusStrip1);
-			this.Controls.Add(this.splitContainer1);
 			this.Controls.Add(this.menuStrip1);
 			this.MainMenuStrip = this.menuStrip1;
 			this.Name = "KompresjaForm";
@@ -229,15 +240,12 @@ namespace KompresjaFraktalna {
 			this.Load += new System.EventHandler(this.KompresjaForm_Load);
 			this.menuStrip1.ResumeLayout(false);
 			this.menuStrip1.PerformLayout();
-			this.splitContainer1.Panel1.ResumeLayout(false);
-			this.splitContainer1.Panel1.PerformLayout();
-			this.splitContainer1.Panel2.ResumeLayout(false);
-			this.splitContainer1.Panel2.PerformLayout();
-			this.splitContainer1.ResumeLayout(false);
-			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
-			((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.input)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.output)).EndInit();
 			this.statusStrip1.ResumeLayout(false);
 			this.statusStrip1.PerformLayout();
+			this.tableLayoutPanel1.ResumeLayout(false);
+			this.tableLayoutPanel1.PerformLayout();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -252,10 +260,9 @@ namespace KompresjaFraktalna {
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
-        private System.Windows.Forms.SaveFileDialog saveFileDialog1;
-        private System.Windows.Forms.SplitContainer splitContainer1;
-        private System.Windows.Forms.PictureBox pictureBox1;
-        private System.Windows.Forms.PictureBox pictureBox2;
+		private System.Windows.Forms.SaveFileDialog saveFileDialog1;
+        private System.Windows.Forms.PictureBox input;
+        private System.Windows.Forms.PictureBox output;
 		private System.Windows.Forms.ToolStripMenuItem compressToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem decompressToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem loadCompressedDataToolStripMenuItem;
@@ -264,6 +271,9 @@ namespace KompresjaFraktalna {
 		private System.ComponentModel.BackgroundWorker backgroundWorker;
 		private System.Windows.Forms.StatusStrip statusStrip1;
 		private System.Windows.Forms.ToolStripProgressBar toolStripProgressBar1;
+		private System.Windows.Forms.Panel domains;
+		private System.Windows.Forms.Panel regions;
+		private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
     }
 }
 

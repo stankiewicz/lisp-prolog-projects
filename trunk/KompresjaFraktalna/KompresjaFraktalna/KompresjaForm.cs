@@ -33,19 +33,19 @@ namespace KompresjaFraktalna {
 				Bitmap bmp = new Bitmap(file);
 				fc.Input = bmp;
 
-				this.pictureBox1.Image = bmp;
-				this.pictureBox1.Refresh();
+				this.input.Image = fc.Input;
+				this.input.Refresh();
             }
         }
 
         private void saveToolStripMenuItem_Click(object sender, EventArgs e) {
-			if (pictureBox2.Image == null) {
+			if (output.Image == null) {
 				MessageBox.Show("Brak skompresowanego obrazka");
 				return;
 			}
 
 			if (saveFileDialog1.ShowDialog() == DialogResult.OK) {
-				pictureBox2.Image.Save(saveFileDialog1.FileName);
+				output.Image.Save(saveFileDialog1.FileName);
 				MessageBox.Show("Plik zapisany");
 			}
         }
@@ -86,7 +86,7 @@ namespace KompresjaFraktalna {
 					break;
 				case Operation.Decompression:
 					MessageBox.Show("Dekompresja zakoñczona");
-					pictureBox2.Image = fc.Output;
+					output.Image = fc.Output;
 					break;
 				default:
 					break;
@@ -106,7 +106,7 @@ namespace KompresjaFraktalna {
 				case Operation.Decompression:
 					fc.Decompress();
 					e.Result = op;
-					pictureBox2.Image = fc.Output;
+					output.Image = fc.Output;
 
 					break;
 				default:

@@ -6,12 +6,11 @@ using System.Drawing;
 namespace KompresjaFraktalna {
 	class FractalCompressor {
 
-		int orgWidth, orgHeight;
-		Bitmap input, output;
+		Bitmap _input, _output, _realInput, _realOutput;
 
-		byte[,] redChannel, greenChannel, blueChannel;
+		byte[,] _redChannel, _greenChannel, _blueChannel;
 
-		ChannelData redChannelData, blueChannelData, greenChannelData;
+		ChannelData _redChannelData, _blueChannelData, _greenChannelData;
 
 		/// <summary>
 		/// Jakiœ obiekt
@@ -20,30 +19,50 @@ namespace KompresjaFraktalna {
 
 		public Bitmap Input {
 			set {
-				//zapamiêtujemy rozmiar oryginalnej bitmapy
-				orgWidth = value.Width;
-				orgHeight = value.Height;
+				_realInput = value;
 
 				//tworzymy now¹ bitmapê dla tego por¹banego algorytmu
-				int newWidth = getNewSize(orgWidth);
-				int newHeight = getNewSize(orgHeight);
-				input = new Bitmap(newWidth, newHeight, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
+				int newWidth = getNewSize(_realInput.Width);
+				int newHeight = getNewSize(_realInput.Height);
+				_input = new Bitmap(newWidth, newHeight, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
 
-				Graphics g = Graphics.FromImage(input);
+				Graphics g = Graphics.FromImage(_input);
 				g.Clear(Color.White);
-				g.DrawImageUnscaled(value, 0, 0);
+				g.DrawImageUnscaled(_realInput, 0, 0);
 				g.Dispose();
+			}
+			get {
+				return _input;
 			}
 		}
 
 		public Bitmap Output {
 			get {
-				return output;
+				return _output;
 			}
 		}
 
+		public Bitmap getRealInput() {
+			return _realInput;
+		}
+
+		public Bitmap getRealOutput() {
+			if (_output == null) {
+				return null;
+			}
+
+			if (_realOutput == null) {
+				Bitmap bmp = new Bitmap(_realInput.Width, _realInput.Height);
+				Graphics g = Graphics.FromImage(bmp);
+				g.DrawImageUnscaled(_output, 0, 0);
+				g.Dispose();
+			}
+
+			return _realOutput;
+		}
+
 		public void Compress() {
-			if (input == null) {
+			if (_input == null) {
 				throw new InvalidOperationException("Nie podano bitmapy");
 			}
 
@@ -52,39 +71,38 @@ namespace KompresjaFraktalna {
 			Compressor compressor = new Compressor();
 			
 			Console.WriteLine("Compressing red channel");
-			redChannelData = compressor.Compress(redChannel);
+			_redChannelData = compressor.Compress(_redChannel);
 			Console.WriteLine("Red channel compressed");
 
 			Console.WriteLine("Compressing green channel");
-			greenChannelData = compressor.Compress(greenChannel);
+			_greenChannelData = compressor.Compress(_greenChannel);
 			Console.WriteLine("Green channel compressed");
 
 			Console.WriteLine("Compressing blue channel");
-			blueChannelData = compressor.Compress(blueChannel);
+			_blueChannelData = compressor.Compress(_blueChannel);
 			Console.WriteLine("Blue channel compressed");
 
 			ChannelViewer cv = new ChannelViewer();
-			cv.ChannelDataR = redChannelData;
-			cv.ChannelDataG = greenChannelData;
-			cv.ChannelDataB = blueChannelData;
+			cv.ChannelDataR = _redChannelData;
+			cv.ChannelDataG = _greenChannelData;
+			cv.ChannelDataB = _blueChannelData;
 			cv.redrawBitmap();
-			cv.ShowDialog();
 		}
 
 		private void prepareChannels() {
-			UnsafeBitmap bm = new UnsafeBitmap(input);
+			UnsafeBitmap bm = new UnsafeBitmap(_input);
 			bm.LockBitmap();
 			
-			redChannel = new byte[bm.Width, bm.Height];
-			greenChannel = new byte[bm.Width, bm.Height];
-			blueChannel = new byte[bm.Width, bm.Height];
+			_redChannel = new byte[bm.Width, bm.Height];
+			_greenChannel = new byte[bm.Width, bm.Height];
+			_blueChannel = new byte[bm.Width, bm.Height];
 
 			for (int i = 0; i < bm.Width; ++i) {
 				for (int j = 0; j < bm.Height; ++j) {
 					PixelData pd = bm.GetPixel(i, j);
-					blueChannel[i, j] = pd.B;
-					greenChannel[i, j] = pd.G;
-					redChannel[i, j] = pd.R;
+					_blueChannel[i, j] = pd.B;
+					_greenChannel[i, j] = pd.G;
+					_redChannel[i, j] = pd.R;
 				}
 			}
 			bm.UnlockBitmap();
@@ -95,27 +113,27 @@ namespace KompresjaFraktalna {
 
 			Decompressor decompressor = new Decompressor();
 
-			redChannel = decompressor.Decompress(redChannelData);
+			_redChannel = decompressor.Decompress(_redChannelData);
 
-			greenChannel= decompressor.Decompress(greenChannelData);
+			_greenChannel= decompressor.Decompress(_greenChannelData);
 
-			blueChannel= decompressor.Decompress(blueChannelData);
+			_blueChannel= decompressor.Decompress(_blueChannelData);
 
 			Console.WriteLine("Tworzenie koñcowej bitmapy");
-			Bitmap bmp = new Bitmap(blueChannel.GetLength(0), blueChannel.GetLength(1), System.Drawing.Imaging.PixelFormat.Format24bppRgb);
+			Bitmap bmp = new Bitmap(_blueChannel.GetLength(0), _blueChannel.GetLength(1), System.Drawing.Imaging.PixelFormat.Format24bppRgb);
 			UnsafeBitmap unsafeBitmap = new UnsafeBitmap(bmp);
 			unsafeBitmap.LockBitmap();
 
 			for (int i = 0; i < unsafeBitmap.Width; ++i) {
 				for (int j = 0; j < unsafeBitmap.Height; ++j) {
-					PixelData pd = new PixelData((byte)redChannel[i, j], (byte)greenChannel[i, j], (byte)blueChannel[i, j]);
+					PixelData pd = new PixelData((byte)_redChannel[i, j], (byte)_greenChannel[i, j], (byte)_blueChannel[i, j]);
 					unsafeBitmap.SetPixel(i, j, pd);
 				}
 			}
 			unsafeBitmap.UnlockBitmap();
 
 			Console.WriteLine("Tworzenie koñcowej bitmapy zakoñczone");
-			output = bmp;
+			_output = bmp;
 		}
 
 		public Object CompressedData {
