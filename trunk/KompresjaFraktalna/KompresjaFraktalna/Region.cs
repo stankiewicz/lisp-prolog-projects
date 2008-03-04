@@ -20,14 +20,12 @@ namespace KompresjaFraktalna {
             set { domainPosition = value; }
         }
 
-        private double[] parameters;
+        private Params parameters;
 
-        public double[] Parameters {
+        public Params Parameters {
             get { return parameters; }
             set { parameters = value; }
-        }
-
-        
+        }        
 
         private int depth;
 

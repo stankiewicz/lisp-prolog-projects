@@ -10,10 +10,8 @@ namespace KompresjaFraktalna {
         Bitmap bitmap;
 
         private int pixels;
-
-
-
         int width;
+
         BitmapData bitmapData = null;
         Byte* pBase = null;
 
@@ -29,7 +27,7 @@ namespace KompresjaFraktalna {
         }
 
         public UnsafeBitmap(int width, int height) {
-            this.bitmap = new Bitmap(width, height);
+            this.bitmap = new Bitmap(width, height, PixelFormat.Format24bppRgb);
         }
 
         public UnsafeBitmap(UnsafeBitmap ub) {
@@ -54,12 +52,12 @@ namespace KompresjaFraktalna {
             get { return this.Bitmap.Height; }
         }
 
-        private Point PixelSize {
+        private System.Drawing.Point PixelSize {
             get {
                 GraphicsUnit unit = GraphicsUnit.Pixel;
                 RectangleF bounds = bitmap.GetBounds(ref unit);
 
-                return new Point((int)bounds.Width, (int)bounds.Height);
+                return new System.Drawing.Point((int)bounds.Width, (int)bounds.Height);
             }
         }
 
