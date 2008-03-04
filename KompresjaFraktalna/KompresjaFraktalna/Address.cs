@@ -4,15 +4,12 @@ using System.Text;
 
 namespace KompresjaFraktalna {
     class Address {
-        
-
-
         private Domain _domain;
         private double _hij;
         private double _contractivityFactor;
-        private double [] _otherParameters;
+        private Params _otherParameters;
 
-        public double[] OtherParameters {
+		public Params OtherParameters {
             get { return _otherParameters; }
             set { _otherParameters = value; }
         }

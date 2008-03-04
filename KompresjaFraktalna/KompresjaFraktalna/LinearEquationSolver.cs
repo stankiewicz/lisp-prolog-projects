@@ -15,10 +15,7 @@ namespace KompresjaFraktalna {
         public static bool GaussianElimination(double[,] a, double[] r) {
 
             double t, s;
-
             int i, l, j, k, m, n;
-
-
 
             try {
 

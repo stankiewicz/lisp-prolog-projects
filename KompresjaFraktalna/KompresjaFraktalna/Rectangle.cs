@@ -5,7 +5,7 @@ using System.Runtime.Serialization;
 
 namespace KompresjaFraktalna {
     [Serializable]
-    class Rectangle {
+    public class Rectangle {
     
         private int _x;
         private int _y;
@@ -28,10 +28,10 @@ namespace KompresjaFraktalna {
         public Point[] Points {
             get {
                 return new Point[] {
-                    new Point(X,Y,_x00),
-                    new Point(X+Width-1,Y,_x01),
-                    new Point(X,Y+Height-1,_x10),
-                    new Point(X+Width-1,Y+Height-1,_x11)
+                    new Point(Left,Bottom,_x00),
+                    new Point(Right,Bottom,_x01),
+                    new Point(Left,Top,_x10),
+                    new Point(Right,Top,_x11)
                 };
             }
         }
@@ -59,8 +59,6 @@ namespace KompresjaFraktalna {
                 return _y;
             }
         }
-
-
         
         public int X {
             get { return _x; }
@@ -81,13 +79,5 @@ namespace KompresjaFraktalna {
         public int Height {
             get { return _height; }
         }
-
-        #region ISerializable Members
-
-        public void GetObjectData(SerializationInfo info, StreamingContext context) {
-            
-        }
-
-        #endregion
     }
 }

@@ -1,11 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using KompresjaFraktalna.utils;
 
 namespace KompresjaFraktalna {
-    class Decompressor : Common {
+    class Decompressor {
 
-        public int[,] Decompress(ChannelData sfk) {
+        public byte[,] Decompress(ChannelData sfk) {
             int _delta;
             int _Delta;
             int _dMax;
@@ -24,10 +25,10 @@ namespace KompresjaFraktalna {
             //_AD = (List<Address>)formatter.Deserialize(inputStream);
             _regions = new Queue<Region>( sfk.Regions);
 
-            int[,] image = new int[width, height];
+            byte[,] image = new byte[width, height];
 
             foreach (Point interpolationPoint in _IP) {
-                image[interpolationPoint.X, interpolationPoint.Y] = interpolationPoint.Z;
+                image[interpolationPoint.X, interpolationPoint.Y] = (byte)interpolationPoint.Z;
             }
 
             double a = (double)_delta / (double)_Delta;
@@ -42,7 +43,7 @@ namespace KompresjaFraktalna {
                     if (r.Depth > step) continue;
 					int domainX = r.Domain.Left;
 					int domainY = r.Domain.Bottom;
-                    double[] parameters = r.Parameters;
+                    Params parameters = r.Parameters;
                     Domain domain = new Domain(-1, domainX, domainY, _Delta + 1, _Delta + 1, 0, 0, 0, 0);
 
                     double factor = r.ContractivityFactor;
@@ -55,39 +56,13 @@ namespace KompresjaFraktalna {
         }
 
 
-        private bool TryMapDomainToRegion(Domain domain, Region region, double s, int[,] bitmap, out double[] parameters) {
+        
 
-            parameters = new double[8];
-            parameters[(int)param.a] = ((double)region.Size - 1) / ((double)domain.Size - 1);
-            parameters[(int)param.k] = region.X - domain.X * parameters[(int)param.a];
-            parameters[(int)param.d] = parameters[(int)param.a];
-            parameters[(int)param.l] = region.Y - domain.Y * parameters[(int)param.a];
-            double[] B = new double[4];
-            double[,] A = new double[,] { 
-                  { domain.Left, domain.Bottom, domain.Left * domain.Bottom, 1, bitmap[region.Left, region.Bottom] - s * bitmap[domain.Left, domain.Bottom] },
-                  { domain.Right, domain.Bottom, (domain.Right)*(domain.Bottom), 1, bitmap[region.Right, region.Bottom] - s * bitmap[domain.Right, domain.Bottom]},
-                  { domain.Left, domain.Top, domain.Left*(domain.Top), 1, bitmap[region.Left, region.Top] - s * bitmap[domain.Left, domain.Top]},
-                  { domain.Right, domain.Top, (domain.Right)*(domain.Top), 1, bitmap[region.Right, region.Top] - s * bitmap[domain.Right, domain.Top]}
-           };
-            if (LinearEquationSolver.GaussianElimination(A, B)) {
-                parameters[(int)param.e] = B[0];
-                parameters[(int)param.g] = B[1];
-                parameters[(int)param.h] = B[2];
-                parameters[(int)param.m] = B[3];
-                return true;
-            } else
-                throw new Exception("Macierz osobliwa");
+        private void Map(int krok, Domain domain, Region region, byte[,] bitmap) {
 
+            Params parameters;
 
-
-
-        }
-
-        private void Map(int krok, Domain domain, Region region, int[,] bitmap) {
-
-            double[] parameters;
-
-            if (TryMapDomainToRegion(domain, region, region.ContractivityFactor, bitmap, out parameters) == false) {
+            if (Common.TryMapDomainToRegion(domain, region, region.ContractivityFactor, bitmap, out parameters) == false) {
                 throw new NotImplementedException("dupa bladaa");
             }
 
@@ -95,17 +70,17 @@ namespace KompresjaFraktalna {
                 for (int y = domain.Bottom; y <= domain.Top; y += krok) {
 
                     Point mapped = mapPoint(new Point(x, y, bitmap[x, y]), parameters, region.ContractivityFactor);
-                    bitmap[mapped.X, mapped.Y] = mapped.Z;
+                    bitmap[mapped.X, mapped.Y] = (byte)mapped.Z;
                 }
             }
         }
 
-        private Point mapPoint(Point from, double[] parameters, double factor) {
+        private Point mapPoint(Point from, Params parameters, double factor) {
 
             int z = from.Z;
-            double xm = parameters[(int)param.a] * from.X + parameters[(int)param.k];
-            double ym = parameters[(int)param.d] * from.Y + parameters[(int)param.l];
-            double zm = parameters[(int)param.e] * from.X + parameters[(int)param.g] * from.Y + parameters[(int)param.h] * from.X * from.Y + factor * from.Z + parameters[(int)param.m];
+            double xm = parameters.A * from.X + parameters.K;
+            double ym = parameters.D * from.Y + parameters.L;
+            double zm = parameters.E * from.X + parameters.G * from.Y + parameters.H * from.X * from.Y + factor * from.Z + parameters.M;
 
             return new Point((int)xm, (int)ym, (int)zm);
         }
