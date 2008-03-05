@@ -37,7 +37,7 @@ namespace KompresjaFraktalna.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("3")]
+        [global::System.Configuration.DefaultSettingValueAttribute("4")]
         public int Dmax {
             get {
                 return ((int)(this["Dmax"]));
@@ -49,7 +49,7 @@ namespace KompresjaFraktalna.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("128")]
+        [global::System.Configuration.DefaultSettingValueAttribute("32")]
         public int BigDelta {
             get {
                 return ((int)(this["BigDelta"]));
@@ -61,7 +61,7 @@ namespace KompresjaFraktalna.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("64")]
+        [global::System.Configuration.DefaultSettingValueAttribute("16")]
         public int SmallDelta {
             get {
                 return ((int)(this["SmallDelta"]));
