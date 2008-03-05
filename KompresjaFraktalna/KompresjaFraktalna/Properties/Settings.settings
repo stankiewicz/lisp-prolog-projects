@@ -6,13 +6,13 @@
       <Value Profile="(Default)">4</Value>
     </Setting>
     <Setting Name="Dmax" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">3</Value>
+      <Value Profile="(Default)">4</Value>
     </Setting>
     <Setting Name="BigDelta" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">128</Value>
+      <Value Profile="(Default)">32</Value>
     </Setting>
     <Setting Name="SmallDelta" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">64</Value>
+      <Value Profile="(Default)">16</Value>
     </Setting>
     <Setting Name="EpsilonHij" Type="System.Double" Scope="User">
       <Value Profile="(Default)">40</Value>
