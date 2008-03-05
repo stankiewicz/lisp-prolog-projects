@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Drawing;
+using KompresjaFraktalna.Properties;
 
 namespace KompresjaFraktalna {
 	class FractalCompressor {
@@ -81,12 +82,6 @@ namespace KompresjaFraktalna {
 			Console.WriteLine("Compressing blue channel");
 			_blueChannelData = compressor.Compress(_blueChannel);
 			Console.WriteLine("Blue channel compressed");
-
-			ChannelViewer cv = new ChannelViewer();
-			cv.ChannelDataR = _redChannelData;
-			cv.ChannelDataG = _greenChannelData;
-			cv.ChannelDataB = _blueChannelData;
-			cv.redrawBitmap();
 		}
 
 		private void prepareChannels() {
@@ -147,7 +142,7 @@ namespace KompresjaFraktalna {
 		}
 
 		int getNewSize(int oldSize) {
-			int bigDelta = Compression.Default.BigDelta;
+			int bigDelta = Settings.Default.BigDelta;
 			int newSize = 0;
 			while (newSize < oldSize) {
 				newSize += bigDelta;
