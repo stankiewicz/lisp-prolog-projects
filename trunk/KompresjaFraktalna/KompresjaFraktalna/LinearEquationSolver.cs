@@ -82,9 +82,7 @@ namespace KompresjaFraktalna {
             } catch(Exception e) {
                 System.Console.Error.WriteLine(e.Message);
                 return false;
-
             }
-
         }
     }
 }

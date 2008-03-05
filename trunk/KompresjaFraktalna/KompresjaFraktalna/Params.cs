@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace KompresjaFraktalna {
-	class Params {
+	public class Params {
 		double a, k, d, l, e, g, h, m;
 
 		public double A {

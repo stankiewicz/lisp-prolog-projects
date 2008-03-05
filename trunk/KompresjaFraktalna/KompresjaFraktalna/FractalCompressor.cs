@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Drawing;
 using KompresjaFraktalna.Properties;
+using System.Windows.Forms;
 
 namespace KompresjaFraktalna {
 	class FractalCompressor {
@@ -13,10 +14,23 @@ namespace KompresjaFraktalna {
 
 		ChannelData _redChannelData, _blueChannelData, _greenChannelData;
 
-		/// <summary>
-		/// Jakiœ obiekt
-		/// </summary>
-		Object compressedData;
+		public ChannelData RedChannel {
+			get {
+				return _redChannelData;
+			}
+		}
+
+		public ChannelData GreenChannel {
+			get {
+				return _greenChannelData;
+			}
+		}
+
+		public ChannelData BlueChannel {
+			get {
+				return _blueChannelData;
+			}
+		}
 
 		public Bitmap Input {
 			set {
@@ -129,16 +143,6 @@ namespace KompresjaFraktalna {
 
 			Console.WriteLine("Tworzenie koñcowej bitmapy zakoñczone");
 			_output = bmp;
-		}
-
-		public Object CompressedData {
-			get {
-				return compressedData;
-			}
-
-			set {
-				compressedData = value;
-			}
 		}
 
 		int getNewSize(int oldSize) {

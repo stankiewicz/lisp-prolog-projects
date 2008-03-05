@@ -41,9 +41,9 @@ namespace KompresjaFraktalna {
 			this.backgroundWorker = new System.ComponentModel.BackgroundWorker();
 			this.statusStrip1 = new System.Windows.Forms.StatusStrip();
 			this.toolStripProgressBar1 = new System.Windows.Forms.ToolStripProgressBar();
-			this.domains = new System.Windows.Forms.Panel();
 			this.regions = new System.Windows.Forms.Panel();
 			this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+			this.channelDataViewer1 = new KompresjaFraktalna.ChannelDataViewer();
 			this.menuStrip1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.input)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.output)).BeginInit();
@@ -194,13 +194,6 @@ namespace KompresjaFraktalna {
 			this.toolStripProgressBar1.Name = "toolStripProgressBar1";
 			this.toolStripProgressBar1.Size = new System.Drawing.Size(100, 16);
 			// 
-			// domains
-			// 
-			this.domains.Location = new System.Drawing.Point(3, 324);
-			this.domains.Name = "domains";
-			this.domains.Size = new System.Drawing.Size(100, 100);
-			this.domains.TabIndex = 3;
-			// 
 			// regions
 			// 
 			this.regions.Location = new System.Drawing.Point(390, 324);
@@ -215,8 +208,8 @@ namespace KompresjaFraktalna {
 			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
 			this.tableLayoutPanel1.Controls.Add(this.input, 0, 0);
 			this.tableLayoutPanel1.Controls.Add(this.regions, 1, 1);
-			this.tableLayoutPanel1.Controls.Add(this.domains, 0, 1);
 			this.tableLayoutPanel1.Controls.Add(this.output, 1, 0);
+			this.tableLayoutPanel1.Controls.Add(this.channelDataViewer1, 0, 1);
 			this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 24);
 			this.tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -225,6 +218,17 @@ namespace KompresjaFraktalna {
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
 			this.tableLayoutPanel1.Size = new System.Drawing.Size(775, 642);
 			this.tableLayoutPanel1.TabIndex = 5;
+			// 
+			// channelDataViewer1
+			// 
+			this.channelDataViewer1.Blue = null;
+			this.channelDataViewer1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.channelDataViewer1.Green = null;
+			this.channelDataViewer1.Location = new System.Drawing.Point(3, 324);
+			this.channelDataViewer1.Name = "channelDataViewer1";
+			this.channelDataViewer1.Red = null;
+			this.channelDataViewer1.Size = new System.Drawing.Size(254, 234);
+			this.channelDataViewer1.TabIndex = 5;
 			// 
 			// KompresjaForm
 			// 
@@ -271,9 +275,9 @@ namespace KompresjaFraktalna {
 		private System.ComponentModel.BackgroundWorker backgroundWorker;
 		private System.Windows.Forms.StatusStrip statusStrip1;
 		private System.Windows.Forms.ToolStripProgressBar toolStripProgressBar1;
-		private System.Windows.Forms.Panel domains;
 		private System.Windows.Forms.Panel regions;
 		private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+		private ChannelDataViewer channelDataViewer1;
     }
 }
 

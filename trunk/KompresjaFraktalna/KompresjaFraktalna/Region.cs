@@ -4,7 +4,7 @@ using System.Text;
 
 namespace KompresjaFraktalna {
     [Serializable]
-    class Region: Rectangle {
+    public class Region: Rectangle {
 
         private double contractivityFactor = Double.MaxValue;
 

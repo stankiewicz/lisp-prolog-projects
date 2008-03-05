@@ -4,7 +4,7 @@ using System.Text;
 
 namespace KompresjaFraktalna {
     [Serializable]
-    class ChannelData {
+    public class ChannelData {
         private Region[] regions;
 
         public Region [] Regions {
