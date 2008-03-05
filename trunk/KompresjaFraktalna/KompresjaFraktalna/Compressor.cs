@@ -2,13 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using KompresjaFraktalna.utils;
+using KompresjaFraktalna.Properties;
 
 namespace KompresjaFraktalna {
     class Compressor {
 
         byte[,] bitmap;
         
-		double _epsilonHIJ = 50;
+		double _epsilonHIJ;
 		int _delta;
 		int _Delta;
 		int _a;
@@ -23,12 +24,12 @@ namespace KompresjaFraktalna {
              */
 			#endregion
 
-			_epsilonHIJ = 50;
-			_delta = Compression.Default.SmallDelta;
-			_Delta = Compression.Default.BigDelta;
+			_epsilonHIJ = Settings.Default.EpsilonHij;
+			_delta = Settings.Default.SmallDelta;
+			_Delta = Settings.Default.BigDelta;
 			_a = _Delta / _delta;
-			_epsilon = Compression.Default.Epsilon;
-			_dMax = Compression.Default.Dmax;
+			_epsilon = Settings.Default.Epsilon;
+			_dMax = Settings.Default.Dmax;
 		}
 
 		/// <summary>
@@ -100,17 +101,21 @@ namespace KompresjaFraktalna {
 
         private double Distance(Domain domain, Region region, Params parameters) {
             double hij = 0;
-            int delta = domain.Width / region.Width;
+            int delta = (domain.Width - 1) / (region.Width - 1);
 
-            double[,] mappedRegion = new double[region.Width, region.Height];
+            byte[,] mappedRegion = new byte[region.Width, region.Height];
             for (int x = domain.Left; x <= domain.Right; x+=delta) {
                 for (int y = domain.Bottom; y <= domain.Top; y += delta) {
-                    int z = bitmap[x, y];
+                    double z = bitmap[x, y];
                     double xm = parameters.A * x + parameters.K;
                     double ym = parameters.D * y + parameters.L;
-                    double zm = parameters.E * x + parameters.G * y + parameters.H * x * y + region.ContractivityFactor * z + parameters.M;
+                    double zm = parameters.E * x + parameters.G * (double)y + parameters.H * (double)(x * y) + region.ContractivityFactor * z + parameters.M;
 
-                    mappedRegion[(int)xm - region.Left, (int)ym - region.Bottom] = zm;
+					if (zm < 0 || zm > 255) {
+						throw new ArgumentException("mapowanie na region zwraca wartoœci ze z³ego zakresu");
+					}
+
+                    mappedRegion[(int)xm - region.Left, (int)ym - region.Bottom] = (byte)zm;
                 }
             }
 
@@ -330,11 +335,12 @@ namespace KompresjaFraktalna {
 			Queue<Point> iqueue = GenerateInterpolationPoints(_delta, width, height, bitmap);
 
 			Console.WriteLine("Inicjowanie kolejek i tablicy regionów");
-			Queue<double> cqueue = new Queue<double>();
+			//Queue<double> cqueue = new Queue<double>();
 			//Queue<Address> aqueue = new Queue<Address>();
 			Queue<Region> squeue2 = new Queue<Region>();
 			Region[,] regions = new Region[width, height];
 			Queue<Region> _regions = new Queue<Region>();
+			
 			int d = 1;
 			foreach (Region reg in squeue) {
 				regions[reg.Left, reg.Bottom] = reg;

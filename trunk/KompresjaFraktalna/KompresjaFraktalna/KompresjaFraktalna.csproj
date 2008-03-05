@@ -55,12 +55,6 @@
       <DependentUpon>ChannelViewer.cs</DependentUpon>
     </Compile>
     <Compile Include="ChannelData.cs" />
-    <Compile Include="Compression.cs" />
-    <Compile Include="Compression.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>Compression.settings</DependentUpon>
-    </Compile>
     <Compile Include="Compressor.cs" />
     <Compile Include="Decompressor.cs" />
     <Compile Include="Domain.cs" />
@@ -99,10 +93,6 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <None Include="app.config" />
-    <None Include="Compression.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Compression.Designer.cs</LastGenOutput>
-    </None>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
