@@ -26,6 +26,11 @@ namespace KompresjaFraktalna {
             _regions = new Queue<Region>( sfk.Regions);
 
             byte[,] image = new byte[width, height];
+            for (int i = 0; i < width; ++i) {
+                for (int j = 0; j < height; ++j) {
+                    image[i, j] = 0;
+                }
+            }
 
             foreach (Point interpolationPoint in _IP) {
                 image[interpolationPoint.X, interpolationPoint.Y] = (byte)interpolationPoint.Z;
@@ -81,7 +86,8 @@ namespace KompresjaFraktalna {
             double xm = parameters.A * from.X + parameters.K;
             double ym = parameters.D * from.Y + parameters.L;
             double zm = parameters.E * from.X + parameters.G * from.Y + parameters.H * from.X * from.Y + factor * from.Z + parameters.M;
-
+            if (zm < 0) zm = 0;
+            if (zm > 255) zm = 255;
             return new Point((int)xm, (int)ym, (int)zm);
         }
     }
