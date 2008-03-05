@@ -109,13 +109,14 @@ namespace KompresjaFraktalna {
                     double z = bitmap[x, y];
                     double xm = parameters.A * x + parameters.K;
                     double ym = parameters.D * y + parameters.L;
-                    double zm = parameters.E * x + parameters.G * (double)y + parameters.H * (double)(x * y) + region.ContractivityFactor * z + parameters.M;
-
-					if (zm < 0 || zm > 255) {
-						throw new ArgumentException("mapowanie na region zwraca wartoœci ze z³ego zakresu");
+                    double zm = parameters.E * x + parameters.G * y + parameters.H * x * y + region.ContractivityFactor * z + parameters.M;
+					if (zm < 0) {
+						zm = 0;
+					} else if (zm > 255) {
+						zm = 255;
 					}
 
-                    mappedRegion[(int)xm - region.Left, (int)ym - region.Bottom] = (byte)zm;
+                    mappedRegion[(int)Math.Round(xm) - region.Left, (int)Math.Round(ym) - region.Bottom] = (byte)zm;
                 }
             }
 
@@ -156,14 +157,18 @@ namespace KompresjaFraktalna {
         /// <returns></returns>
         private bool CheckConditionOfContinuity(Domain domain, Region region, Region[,] regions, int delta) {
 
-            if(region.Bottom == 0 && region.Left ==0) return true;
+			if (region.Bottom == 0 && region.Left == 0) {
+				return true;
+			}
 
             do {
 
                 if (region.Left != 0) {
                     // sprawdzamy lewy region
                     Region left = regions[region.X - region.Width + 1, region.Y];
-                    if (left == null) break;
+					if (left == null) {
+						break;
+					}
 
                     // hack me
                     if (left.Depth != region.Depth) {
@@ -172,7 +177,9 @@ namespace KompresjaFraktalna {
 
                     // liczymy condition of continuity
                     Domain leftDomain = left.Domain;
-                    if (leftDomain == null) break;
+					if (leftDomain == null) {
+						break;
+					}
                     double contrFactorLeft = left.ContractivityFactor;
                     if (contrFactorLeft == Double.MaxValue) {
                         break;
@@ -212,7 +219,9 @@ namespace KompresjaFraktalna {
             if (region.Bottom != 0) {
                 // sprawdzamy lewy region
                 Region down = regions[region.Left, region.Bottom - region.Height + 1];
-                if (down == null) return true;
+				if (down == null) {
+					return true;
+				}
 
                 // hack me
                 if (down.Depth != region.Depth) {
@@ -221,7 +230,9 @@ namespace KompresjaFraktalna {
 
                 // liczymy condition of continuity
                 Domain downDomain = down.Domain;
-                if (downDomain == null) return true;
+				if (downDomain == null) {
+					return true;
+				}
                 double contrFactorDown = down.ContractivityFactor;
                 if (contrFactorDown == Double.MaxValue) {
                     return true;
@@ -253,14 +264,12 @@ namespace KompresjaFraktalna {
                     }
                 }
             }
-               
-
 
             return true;
         }
 
         private double distanceFromLine(double x1, double z1, double x2, double z2, double xt, double zt) {
-            double a = (z2 - z1) / (x2-x1);
+            double a = (z2 - z1) / (x2 - x1);
             return Math.Abs(a * xt + z1 - zt);
         }
 
@@ -272,22 +281,23 @@ namespace KompresjaFraktalna {
 
             for (int row = rect.Y ; row < rect.Y + rect.Height; ++row) {
                 
-                a = (bitmap[rect.Right, row] - bitmap[rect.X, row]) / rect.Width;
+				double dZ = bitmap[rect.Right, row] - bitmap[rect.X, row];
+                a = dZ / (double)rect.Width;
 
                 double aIter = a * rect.X;
 
                 for (int x = rect.X; x < rect.X + rect.Width; ++x) {
 
                     aIter += a;
-                    distances += Math.Abs(aIter - bitmap[x,row]);
+                    distances += Math.Abs(aIter - (double)bitmap[x,row]);
                     // aIter wartosc w punkcie
 
-                }
+				}
 
 
             }
 
-            distances/=rect.Height*rect.Width;
+            distances /= (double)(rect.Height * rect.Width);
             
             return distances;
         }
@@ -297,12 +307,12 @@ namespace KompresjaFraktalna {
             double ni = 1;
 
             // mi - domena
-            mi = ComputeMeanDistance(domain,bitmap);
+            mi = ComputeMeanDistance(domain, bitmap);
 
 
 
             // ni - region
-            ni = ComputeMeanDistance(region,bitmap);
+            ni = ComputeMeanDistance(region, bitmap);
 
             return ni / mi;
         }
@@ -385,6 +395,7 @@ namespace KompresjaFraktalna {
 						if (Math.Abs(contractivityFactor) >= 1 && !firstRun) {
 							continue;
 						}
+
 						region.ContractivityFactor = contractivityFactor;
 						if (CheckConditionOfContinuity(domain, region, regions, _delta) == false && !firstRun) {
 							continue;

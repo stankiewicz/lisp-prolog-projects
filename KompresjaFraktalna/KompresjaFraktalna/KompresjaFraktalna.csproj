@@ -48,6 +48,12 @@
       <DependentUpon>About.cs</DependentUpon>
     </Compile>
     <Compile Include="Address.cs" />
+    <Compile Include="ChannelDataViewer.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ChannelDataViewer.Designer.cs">
+      <DependentUpon>ChannelDataViewer.cs</DependentUpon>
+    </Compile>
     <Compile Include="ChannelViewer.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -73,6 +79,10 @@
     <EmbeddedResource Include="About.resx">
       <SubType>Designer</SubType>
       <DependentUpon>About.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ChannelDataViewer.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>ChannelDataViewer.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ChannelViewer.resx">
       <SubType>Designer</SubType>

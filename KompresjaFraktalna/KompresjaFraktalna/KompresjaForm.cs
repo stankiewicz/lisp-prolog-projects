@@ -34,7 +34,10 @@ namespace KompresjaFraktalna {
 				fc.Input = bmp;
 
 				this.input.Image = fc.Input;
-				this.input.Refresh();
+				this.input.Invalidate();
+
+				this.channelDataViewer1.Size = fc.Input.Size;
+				this.channelDataViewer1.Invalidate();
             }
         }
 
@@ -83,6 +86,9 @@ namespace KompresjaFraktalna {
 			switch (op) {
 				case Operation.Compression:
 					MessageBox.Show("Kompresja zakoñczona");
+					channelDataViewer1.Red = fc.RedChannel;
+					channelDataViewer1.Green = fc.GreenChannel;
+					channelDataViewer1.Blue = fc.BlueChannel;
 					break;
 				case Operation.Decompression:
 					MessageBox.Show("Dekompresja zakoñczona");
@@ -106,8 +112,6 @@ namespace KompresjaFraktalna {
 				case Operation.Decompression:
 					fc.Decompress();
 					e.Result = op;
-					output.Image = fc.Output;
-
 					break;
 				default:
 					break;
