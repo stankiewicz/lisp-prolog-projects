@@ -41,14 +41,17 @@ namespace KompresjaFraktalna {
 			this.backgroundWorker = new System.ComponentModel.BackgroundWorker();
 			this.statusStrip1 = new System.Windows.Forms.StatusStrip();
 			this.toolStripProgressBar1 = new System.Windows.Forms.ToolStripProgressBar();
-			this.regions = new System.Windows.Forms.Panel();
 			this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+			this.panel1 = new System.Windows.Forms.Panel();
+			this.panel2 = new System.Windows.Forms.Panel();
 			this.channelDataViewer1 = new KompresjaFraktalna.ChannelDataViewer();
 			this.menuStrip1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.input)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.output)).BeginInit();
 			this.statusStrip1.SuspendLayout();
 			this.tableLayoutPanel1.SuspendLayout();
+			this.panel1.SuspendLayout();
+			this.panel2.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// menuStrip1
@@ -165,7 +168,7 @@ namespace KompresjaFraktalna {
 			// output
 			// 
 			this.output.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.output.Location = new System.Drawing.Point(390, 3);
+			this.output.Location = new System.Drawing.Point(0, 3);
 			this.output.Name = "output";
 			this.output.Size = new System.Drawing.Size(100, 100);
 			this.output.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
@@ -194,22 +197,14 @@ namespace KompresjaFraktalna {
 			this.toolStripProgressBar1.Name = "toolStripProgressBar1";
 			this.toolStripProgressBar1.Size = new System.Drawing.Size(100, 16);
 			// 
-			// regions
-			// 
-			this.regions.Location = new System.Drawing.Point(390, 324);
-			this.regions.Name = "regions";
-			this.regions.Size = new System.Drawing.Size(100, 100);
-			this.regions.TabIndex = 4;
-			// 
 			// tableLayoutPanel1
 			// 
 			this.tableLayoutPanel1.ColumnCount = 2;
 			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
 			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-			this.tableLayoutPanel1.Controls.Add(this.input, 0, 0);
-			this.tableLayoutPanel1.Controls.Add(this.regions, 1, 1);
-			this.tableLayoutPanel1.Controls.Add(this.output, 1, 0);
 			this.tableLayoutPanel1.Controls.Add(this.channelDataViewer1, 0, 1);
+			this.tableLayoutPanel1.Controls.Add(this.panel1, 0, 0);
+			this.tableLayoutPanel1.Controls.Add(this.panel2, 1, 0);
 			this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 24);
 			this.tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -218,6 +213,26 @@ namespace KompresjaFraktalna {
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
 			this.tableLayoutPanel1.Size = new System.Drawing.Size(775, 642);
 			this.tableLayoutPanel1.TabIndex = 5;
+			// 
+			// panel1
+			// 
+			this.panel1.AutoScroll = true;
+			this.panel1.Controls.Add(this.input);
+			this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.panel1.Location = new System.Drawing.Point(3, 3);
+			this.panel1.Name = "panel1";
+			this.panel1.Size = new System.Drawing.Size(381, 315);
+			this.panel1.TabIndex = 6;
+			// 
+			// panel2
+			// 
+			this.panel2.AutoScroll = true;
+			this.panel2.Controls.Add(this.output);
+			this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.panel2.Location = new System.Drawing.Point(390, 3);
+			this.panel2.Name = "panel2";
+			this.panel2.Size = new System.Drawing.Size(382, 315);
+			this.panel2.TabIndex = 7;
 			// 
 			// channelDataViewer1
 			// 
@@ -249,7 +264,10 @@ namespace KompresjaFraktalna {
 			this.statusStrip1.ResumeLayout(false);
 			this.statusStrip1.PerformLayout();
 			this.tableLayoutPanel1.ResumeLayout(false);
-			this.tableLayoutPanel1.PerformLayout();
+			this.panel1.ResumeLayout(false);
+			this.panel1.PerformLayout();
+			this.panel2.ResumeLayout(false);
+			this.panel2.PerformLayout();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -275,9 +293,10 @@ namespace KompresjaFraktalna {
 		private System.ComponentModel.BackgroundWorker backgroundWorker;
 		private System.Windows.Forms.StatusStrip statusStrip1;
 		private System.Windows.Forms.ToolStripProgressBar toolStripProgressBar1;
-		private System.Windows.Forms.Panel regions;
 		private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
 		private ChannelDataViewer channelDataViewer1;
+		private System.Windows.Forms.Panel panel1;
+		private System.Windows.Forms.Panel panel2;
     }
 }
 
