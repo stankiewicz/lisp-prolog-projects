@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using KompresjaFraktalna.utils;
 using KompresjaFraktalna.Properties;
+using System.Diagnostics;
 
 namespace KompresjaFraktalna {
     class Compressor {
@@ -376,8 +377,10 @@ namespace KompresjaFraktalna {
 					 */
 					Region region = squeue.Dequeue();
 
-					Address minimum = new Address();
-					minimum.Hij = Double.MaxValue;
+					double minHij = Double.MaxValue;
+					Params minParams = null;
+					Domain minDomain = null;
+					double minContrFactor = Double.MaxValue;
 
 					bool firstRun = true;
 
@@ -419,7 +422,7 @@ namespace KompresjaFraktalna {
 
 						Params parameters;
 						if (Common.TryMapDomainToRegion(domain, region, contractivityFactor, bitmap, out parameters)) {
-							minimum.OtherParameters = parameters;
+							minParams = parameters;
 
 						} else {
 							throw new Exception("moja glowa!! brak rozwiazania");
@@ -446,11 +449,11 @@ namespace KompresjaFraktalna {
 						/*
 						 * trzeba wszystko to zapamietac jesli hij jest mniejsze
 						 */
-						if (hij < minimum.Hij || firstRun) {
-							minimum.Domain = domain;
-							minimum.Hij = hij;
-							minimum.ContractivityFactor = contractivityFactor;
-							minimum.OtherParameters = parameters; // ??
+						if (hij < minHij || firstRun) {
+							minDomain = domain;
+							minHij = hij;
+							minContrFactor = contractivityFactor;
+							minParams = parameters; //?
 						}
 						/*
 						 * 3.b.v.
@@ -460,7 +463,7 @@ namespace KompresjaFraktalna {
 						firstRun = false;
 					}
 
-					if (minimum.Domain == null) {
+					if (minDomain == null) {
 						throw new Exception("Domena == null");
 					}
 
@@ -480,7 +483,7 @@ namespace KompresjaFraktalna {
 					 * else 
 					 * store y with the minimum distance inside aqueue and s inside aqueue
 					 */
-					if (minimum.Hij > _epsilonHIJ && d <= _dMax) {
+					if (minHij > _epsilonHIJ && d <= _dMax) {
 						Region r1, r2, r3, r4;
 						int newSize = 1 + region.Size / 2;
 						r1 = GenerateRegion(region.X, region.Y, newSize, newSize, bitmap);
@@ -519,12 +522,12 @@ namespace KompresjaFraktalna {
 						//aqueue.Enqueue(minimum);
 						//cqueue.Enqueue(minimum.ContractivityFactor);
 
-						region.Domain = minimum.Domain;
-						region.ContractivityFactor = minimum.ContractivityFactor;
-						region.Parameters = minimum.OtherParameters;
+						region.Domain = minDomain;
+						region.ContractivityFactor = minContrFactor;
+						region.Parameters = minParams;
 						_regions.Enqueue(region);
 						region = null;
-						minimum = null;
+						//minimum = null;
 					}
 				}
 

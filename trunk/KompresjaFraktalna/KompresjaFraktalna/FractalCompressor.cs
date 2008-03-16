@@ -4,6 +4,8 @@ using System.Text;
 using System.Drawing;
 using KompresjaFraktalna.Properties;
 using System.Windows.Forms;
+using System.ComponentModel;
+using System.Threading;
 
 namespace KompresjaFraktalna {
 	class FractalCompressor {
@@ -76,6 +78,8 @@ namespace KompresjaFraktalna {
 			return _realOutput;
 		}
 
+		Semaphore s = new Semaphore(0, 5);
+
 		public void Compress() {
 			if (_input == null) {
 				throw new InvalidOperationException("Nie podano bitmapy");
@@ -83,19 +87,48 @@ namespace KompresjaFraktalna {
 
 			prepareChannels();
 
+			BackgroundWorker bw1 = new BackgroundWorker();
+			bw1.DoWork += new DoWorkEventHandler(bw1_DoWork);
+			bw1.RunWorkerAsync();
+
+			BackgroundWorker bw2 = new BackgroundWorker();
+			bw2.DoWork += new DoWorkEventHandler(bw2_DoWork);
+			bw2.RunWorkerAsync();
+
+			BackgroundWorker bw3 = new BackgroundWorker();
+			bw3.DoWork += new DoWorkEventHandler(bw3_DoWork);
+			bw3.RunWorkerAsync();
+
+			s.WaitOne();
+			s.WaitOne();
+			s.WaitOne();
+		}
+
+		void bw1_DoWork(object sender, DoWorkEventArgs e) {
 			Compressor compressor = new Compressor();
-			
 			Console.WriteLine("Compressing red channel");
 			_redChannelData = compressor.Compress(_redChannel);
 			Console.WriteLine("Red channel compressed");
 
+			s.Release();
+		}
+
+		void bw2_DoWork(object sender, DoWorkEventArgs e) {
+			Compressor compressor = new Compressor();
 			Console.WriteLine("Compressing green channel");
 			_greenChannelData = compressor.Compress(_greenChannel);
 			Console.WriteLine("Green channel compressed");
 
+			s.Release();
+		}
+
+		void bw3_DoWork(object sender, DoWorkEventArgs e) {
+			Compressor compressor = new Compressor();
 			Console.WriteLine("Compressing blue channel");
 			_blueChannelData = compressor.Compress(_blueChannel);
 			Console.WriteLine("Blue channel compressed");
+
+			s.Release();
 		}
 
 		private void prepareChannels() {
