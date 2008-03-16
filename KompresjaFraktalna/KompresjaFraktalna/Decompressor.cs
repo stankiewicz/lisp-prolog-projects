@@ -6,7 +6,7 @@ using KompresjaFraktalna.utils;
 namespace KompresjaFraktalna {
     class Decompressor {
 
-        public byte[,] Decompress(ChannelData sfk) {
+        public byte[,] Decompress(ChannelData cd) {
             int _delta;
             int _Delta;
             int _dMax;
@@ -15,22 +15,17 @@ namespace KompresjaFraktalna {
 
             int width, height;
 
-            width = sfk.Width;
-            height = sfk.Height;
-            _dMax = sfk.DMax;
-            _delta = sfk.SmallDelta;
-            _Delta = sfk.BigDelta;
+            width = cd.Width;
+            height = cd.Height;
+            _dMax = cd.DMax;
+            _delta = cd.SmallDelta;
+            _Delta = cd.BigDelta;
             //_CON = (List<double>)formatter.Deserialize(inputStream);
-            _IP = new Queue<Point>( sfk.InterpolationPoints);
+            _IP = new Queue<Point>( cd.InterpolationPoints);
             //_AD = (List<Address>)formatter.Deserialize(inputStream);
-            _regions = new Queue<Region>( sfk.Regions);
+            _regions = new Queue<Region>( cd.Regions);
 
             byte[,] image = new byte[width, height];
-            for (int i = 0; i < width; ++i) {
-                for (int j = 0; j < height; ++j) {
-                    image[i, j] = 0;
-                }
-            }
 
             foreach (Point interpolationPoint in _IP) {
                 image[interpolationPoint.X, interpolationPoint.Y] = (byte)interpolationPoint.Z;
