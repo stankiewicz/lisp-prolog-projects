@@ -11,13 +11,7 @@ namespace KompresjaFraktalna {
         private int _y;
         private int _z;
 
-		//public Point(int x, int y) {
-		//    _x = x;
-		//    _y = y;
-		//    _z = 0;
-		//}
-
-        public Point(int x, int y,int z) {
+        public Point(int x, int y, int z) {
             _x = x;
             _y = y;
             _z = z;
@@ -34,6 +28,6 @@ namespace KompresjaFraktalna {
         public int Z {
             get { return _z; }
             set { _z = value; }
-        }        
+        }
     }
 }

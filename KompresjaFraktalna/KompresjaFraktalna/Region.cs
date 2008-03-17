@@ -13,13 +13,6 @@ namespace KompresjaFraktalna {
             set { contractivityFactor = value; }
         }
 
-        private Point domainPosition;
-
-        public Point DomainPosition {
-            get { return domainPosition; }
-            set { domainPosition = value; }
-        }
-
         private Params parameters;
 
         public Params Parameters {
@@ -47,8 +40,14 @@ namespace KompresjaFraktalna {
             set { depth = value; }
         }
 
-        public Region(int x, int y, int width, int height, int x00, int x10, int x01, int x11)
-            : base(x, y, width, height, x00, x10, x01, x11) {
-        }
+		//public Region(int x, int y, int width, int height, int x00, int x10, int x01, int x11)
+		//    : base(x, y, width, height, x00, x10, x01, x11) {
+		//    Depth = 1;
+		//}
+
+		public Region(int x, int y, int width, int height)
+			: base(x, y, width, height) {
+			Depth = 1;
+		}
     }
 }
