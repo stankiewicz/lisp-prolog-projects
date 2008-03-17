@@ -114,6 +114,7 @@
     <Compile Include="Rectangle.cs" />
     <Compile Include="Region.cs" />
     <Compile Include="utils\Common.cs" />
+    <Compile Include="utils\OptimizationHelper.cs" />
     <Compile Include="utils\UnsafeBitmap.cs" />
   </ItemGroup>
   <ItemGroup>

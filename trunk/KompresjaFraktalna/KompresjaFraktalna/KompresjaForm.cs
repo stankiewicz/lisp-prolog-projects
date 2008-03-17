@@ -5,6 +5,10 @@ using System.Data;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.IO.Compression;
+using System.Diagnostics;
 
 namespace KompresjaFraktalna {
     public partial class KompresjaForm : Form {
@@ -19,6 +23,8 @@ namespace KompresjaFraktalna {
         }
 
 		private void KompresjaForm_Load(object sender, EventArgs e) {
+			int c = System.Diagnostics.Debug.Listeners.Add(new ConsoleTraceListener());
+
 			fc = new FractalCompressor();
 		}		
 
@@ -91,14 +97,19 @@ namespace KompresjaFraktalna {
 					channelDataViewer1.Blue = fc.BlueChannel;
 					break;
 				case Operation.Decompression:
-					MessageBox.Show("Dekompresja zakoñczona");
-					output.Image = fc.Output;
+					if (result) {
+						MessageBox.Show("Dekompresja zakoñczona");
+						output.Image = fc.Output;
+					} else {
+						MessageBox.Show("Dekompresja nieudana. Mo¿e z³y format pliku?");
+					}
 					break;
 				default:
 					break;
 			}
 		}
 
+		bool result = true;
 		void backgroundWorker_DoWork(object sender, DoWorkEventArgs e) {
 			Operation op = (Operation)e.Argument;
 
@@ -110,12 +121,79 @@ namespace KompresjaFraktalna {
 					e.Result = op;
 					break;
 				case Operation.Decompression:
-					fc.Decompress();
+					result = fc.Decompress();
 					e.Result = op;
 					break;
 				default:
 					break;
 			}
+		}
+
+		private void saveCompressedDataToolStripMenuItem_Click(object sender, EventArgs e) {
+			if (fc == null) {
+				MessageBox.Show("Nie zainicjalizowano kompresji");
+				return;
+			}
+			if (fc.BlueChannel == null || fc.GreenChannel == null || fc.RedChannel == null) {
+				MessageBox.Show("Brak skompresowanych danych");
+				return;
+			}
+
+			if (saveFileDialog1.ShowDialog() != DialogResult.OK) {
+				return;
+			}
+
+			MemoryStream ms = new MemoryStream();
+			BinaryWriter bw = new BinaryWriter(ms);
+			fc.RedChannel.serialize(bw);
+			fc.GreenChannel.serialize(bw);
+			fc.BlueChannel.serialize(bw);
+
+			byte[] input = new byte[ms.Length];
+			ms.Position = 0;
+			ms.Read(input, 0, input.Length);
+
+			bw.Close();
+			ms.Close();
+
+			FileStream fs = new FileStream(saveFileDialog1.FileName, FileMode.Create, FileAccess.Write);
+			GZipStream zip = new GZipStream(fs, CompressionMode.Compress);
+			zip.Write(input, 0, input.Length);
+			zip.Close();
+			fs.Close();
+
+			MessageBox.Show("File saved");
+		}
+
+		private void loadCompressedDataToolStripMenuItem_Click(object sender, EventArgs e) {
+			if (openFileDialog1.ShowDialog() != DialogResult.OK) {
+				return;
+			}
+
+			FileStream fs = new FileStream(openFileDialog1.FileName, FileMode.Open);
+			GZipStream zip = new GZipStream(fs, CompressionMode.Decompress, true);
+			MemoryStream ms = new MemoryStream();
+			byte[] buffer = new byte[(int)Math.Pow(2, 16)];
+			int bytesRead;
+			bool continueLoop = true;
+			while (continueLoop) {
+				bytesRead = zip.Read(buffer, 0, buffer.Length);
+				if (bytesRead == 0)
+					break;
+				ms.Write(buffer, 0, bytesRead);
+			}
+			zip.Close();
+			fs.Close();
+
+			ms.Position = 0;
+
+			BinaryReader br = new BinaryReader(ms);
+			fc.RedChannel = ChannelData.deserialize(br);
+			fc.GreenChannel = ChannelData.deserialize(br);
+			fc.BlueChannel = ChannelData.deserialize(br);
+			br.Close();
+
+			MessageBox.Show("Data loaded");
 		}
     }
 }
