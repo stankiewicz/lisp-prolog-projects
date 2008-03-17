@@ -14,57 +14,8 @@ using System.Diagnostics;
 
 namespace KompresjaFraktalna {
 	class Compressor {
-
 		byte[,] bitmap;
-
-		/// <summary>
-		/// generuje regiony. wierszowo. 
-		/// zakladam ze width = k* side + 1 x height = l * side +1 , k,l Naturalne.
-		/// </summary>
-		/// <param name="side">delta</param>
-		/// <param name="width">szerokosc obszaru</param>
-		/// <param name="height">wysokosc obszaru</param>
-		/// <returns>podzial na regiony</returns>
-		protected LinkedList<Region> GenerateRegions(int side, int width, int height) {
-			LinkedList<Region> regions = new LinkedList<Region>();
-
-			for (int y = 0; y < height - 1; y += side) {
-				for (int x = 0; x < width - 1; x += side) {
-					Debug.Assert(y + side < height && x + side < width, "Niepoprawne generowanie regionów");
-
-					//Region r = new Region(x, y, side + 1, side + 1, 0, 0, 0, 0);
-					Region r = new Region(x, y, side + 1, side + 1);
-					r.Depth = 1;
-					regions.AddLast(r);
-				}
-			}
-			return regions;
-		}
-
-		/// <summary>
-		/// generuje domeny. wierszowo. zakladam ze width = k* side +1 x height = l * side +1 , k,l Naturalne.
-		/// </summary>
-		/// <param name="side">Delta</param>
-		/// <param name="width">szerokosc obszaru</param>
-		/// <param name="height">wysokosc obszaru</param>
-		/// <returns>podzial na domeny</returns>
-		protected Queue<Domain> GenerateDomains(int side, int width, int height) {
-			Queue<Domain> domains = new Queue<Domain>();
-
-			int j = 0;
-			for (int y = 0; y < height - 1; y += side) {
-				for (int x = 0; x < width - 1; x += side) {
-					Debug.Assert(y + side < height && x + side < width, "Niepoprawne generowanie domen");
-
-					//Domain d = new Domain(j++, x, y, side + 1, side + 1, 0, 0, 0, 0);
-					Domain d = new Domain(j++, x, y, side + 1, side + 1);
-					domains.Enqueue(d);
-				}
-			}
-			return domains;
-		}
-
-
+		OptimizationHelper oh = new OptimizationHelper();
 		/// <summary>
 		/// generuje punkty interpolacji. zakladam ze width = k* side +1 x height = l * side +1 , k,l Naturalne.
 		/// </summary>
@@ -72,22 +23,31 @@ namespace KompresjaFraktalna {
 		/// <param name="width">szerokosc obszaru</param>
 		/// <param name="height">wysokosc obszaru</param>
 		/// <returns>podzial na domeny</returns>
-		protected Queue<Point> GenerateInterpolationPoints(int width, int height, byte[,] bitmap) {
+		protected Queue<Point> GenerateInterpolationPoints(int width, int height) {
 			Queue<Point> points = new Queue<Point>();
 
-			for (int y = 0; y < height; y += Settings.Default.SmallDelta)
+			for (int y = 0; y < height; y += Settings.Default.SmallDelta) {
 				for (int x = 0; x < width; x += Settings.Default.SmallDelta) {
 					Point p = new Point(x, y, bitmap[x, y]);
 					points.Enqueue(p);
 				}
+			}
 			return points;
 		}
 
+		/// <summary>
+		/// Funkcja wylicza odleg³oœæ regionu od domeny.
+		/// </summary>
+		/// <param name="domain"></param>
+		/// <param name="region"></param>
+		/// <param name="parameters"></param>
+		/// <returns></returns>
 		private double Distance(Domain domain, Region region, Params parameters) {
 			double hij = 0;
 			int delta = (domain.Width - 1) / (region.Width - 1);
 
-			byte[,] mappedRegion = new byte[region.Width, region.Height];
+			//byte[,] mappedRegion = new byte[region.Width, region.Height];
+			byte[,] mappedRegion = oh.getTable((ushort)region.Width);
 
 			double xm = parameters.A * domain.Left + parameters.K;
 			double xmDelta = delta * parameters.A;
@@ -98,7 +58,6 @@ namespace KompresjaFraktalna {
 
 				for (int y = domain.Bottom; y <= domain.Top; y += delta, ym += ymDelta) {
 					double z = bitmap[x, y];
-
 					double zm = parameters.E * x + parameters.G * y + parameters.H * x * y + region.ContractivityFactor * z + parameters.M;
 
 					if (zm < 0) {
@@ -121,35 +80,17 @@ namespace KompresjaFraktalna {
 		}
 
 		/// <summary>
-		/// tworzy region z wypelnionymi danymi o kolorze
-		/// </summary>
-		/// <param name="x"></param>
-		/// <param name="y"></param>
-		/// <param name="width"></param>
-		/// <param name="height"></param>
-		/// <param name="bitmap"></param>
-		/// <returns></returns>
-		private Region GenerateRegion(int x, int y, int width, int height, byte[,] bitmap) {
-			//Region r = new Region(x, y, width, height, bitmap[x, y], bitmap[x + width - 1, y], bitmap[x, y + height - 1], bitmap[x + width - 1, y + height - 1]);
-			Region r = new Region(x, y, width, height);
-			return r;
-		}
-
-
-		/// <summary>
 		/// //TODO: poprawiæ
 		/// </summary>
 		/// <param name="domain"></param>
 		/// <param name="region"></param>
 		/// <returns></returns>
 		private bool CheckConditionOfContinuity(Domain domain, Region region, Region[,] regions, int delta) {
-
 			if (region.Bottom == 0 && region.Left == 0) {
 				return true;
 			}
 
 			do {
-
 				if (region.Left != 0) {
 					// sprawdzamy lewy region
 					Region left = regions[region.X - region.Width + 1, region.Y];
@@ -260,11 +201,9 @@ namespace KompresjaFraktalna {
 			return Math.Abs(a * xt + z1 - zt);
 		}
 
-		private double ComputeMeanDistance(Rectangle rect, byte[,] bitmap) {
-
+		private double ComputeMeanDistance(Rectangle rect) {
 			double a;
 			double distances = 0;
-
 
 			for (int row = rect.Y; row < rect.Y + rect.Height; ++row) {
 
@@ -274,7 +213,6 @@ namespace KompresjaFraktalna {
 				double aIter = a * rect.X;
 
 				for (int x = rect.X; x < rect.X + rect.Width; ++x) {
-
 					aIter += a;
 					distances += Math.Abs(aIter - (double)bitmap[x, row]);
 					// aIter wartosc w punkcie
@@ -286,14 +224,14 @@ namespace KompresjaFraktalna {
 			return distances;
 		}
 
-		private double ComputeContractivityFactor(Domain domain, Region region, byte[,] bitmap) {
+		private double ComputeContractivityFactor(Domain domain, Region region) {
 			double mi, ni;
 
 			// mi - domena
-			mi = ComputeMeanDistance(domain, bitmap);
+			mi = ComputeMeanDistance(domain);
 
 			// ni - region
-			ni = ComputeMeanDistance(region, bitmap);
+			ni = ComputeMeanDistance(region);
 
 			return ni / mi;
 		}
@@ -320,10 +258,10 @@ namespace KompresjaFraktalna {
              */
 
 			Console.WriteLine("Generowanie regionów");
-			LinkedList<Region> regionsToProcess = GenerateRegions(Settings.Default.SmallDelta, width, height);
+			LinkedList<Region> regionsToProcess = Region.GenerateRegions(Settings.Default.SmallDelta, width, height);
 
 			Console.WriteLine("Generowanie punktów interpolacji");
-			Queue<Point> interpolationPoints = GenerateInterpolationPoints(width, height, bitmap);
+			Queue<Point> interpolationPoints = GenerateInterpolationPoints(width, height);
 
 			Console.WriteLine("Inicjowanie kolejek i tablicy regionów");
 			Region[,] regionsMap = new Region[width, height];
@@ -334,7 +272,7 @@ namespace KompresjaFraktalna {
 			}
 
 			Console.WriteLine("Generowanie domen");
-			Queue<Domain> domains = GenerateDomains(Settings.Default.BigDelta, width, height);
+			Queue<Domain> domains = Domain.GenerateDomains(Settings.Default.BigDelta, width, height);
 
 			#endregion
 
@@ -369,7 +307,7 @@ namespace KompresjaFraktalna {
 					 * 3.b.x. 
 					 * compute the contractivity factor for the map acciociated with the y-th domain and the region.
 					 */
-					double contractivityFactor = ComputeContractivityFactor(domain, region, bitmap);
+					double contractivityFactor = ComputeContractivityFactor(domain, region);
 
 					/*
 					 * 3.b.ii. 
@@ -469,13 +407,13 @@ namespace KompresjaFraktalna {
 					Region r1, r2, r3, r4;
 
 					int newSize = 1 + region.Size / 2;
-					r1 = GenerateRegion(region.X, region.Y, newSize, newSize, bitmap);
+					r1 = Region.GenerateRegion(region.X, region.Y, newSize, newSize);
 					regionsMap[r1.Left, r1.Bottom] = r1;
-					r2 = GenerateRegion(region.X + newSize - 1, region.Y, newSize, newSize, bitmap);
+					r2 = Region.GenerateRegion(region.X + newSize - 1, region.Y, newSize, newSize);
 					regionsMap[r2.Left, r2.Bottom] = r2;
-					r3 = GenerateRegion(region.X, region.Y + newSize - 1, newSize, newSize, bitmap);
+					r3 = Region.GenerateRegion(region.X, region.Y + newSize - 1, newSize, newSize);
 					regionsMap[r3.Left, r3.Bottom] = r3;
-					r4 = GenerateRegion(region.X + newSize - 1, region.Y + newSize - 1, newSize, newSize, bitmap);
+					r4 = Region.GenerateRegion(region.X + newSize - 1, region.Y + newSize - 1, newSize, newSize);
 					regionsMap[r4.Left, r4.Bottom] = r4;
 
 					r1.Depth = r2.Depth = r3.Depth = r4.Depth = region.Depth + 1;
@@ -510,6 +448,7 @@ namespace KompresjaFraktalna {
 					Point p3 = new Point(r1.Right, r1.Top, bitmap[r1.Right, r1.Top]);
 					Point p4 = new Point(r4.Left, r4.Top, bitmap[r4.Left, r4.Top]);
 					Point p5 = new Point(r4.Right, r4.Bottom, bitmap[r4.Right, r4.Bottom]);
+
 					interpolationPoints.Enqueue(p1);
 					interpolationPoints.Enqueue(p2);
 					interpolationPoints.Enqueue(p3);
@@ -532,8 +471,8 @@ namespace KompresjaFraktalna {
 			//store dmax, delta, Delta, cqueue, iqueue, aqueue
 
 			ChannelData sfk = new ChannelData();
-			sfk.Height = bitmap.GetLength(1);
-			sfk.Width = bitmap.GetLength(0);
+			sfk.Height = height;
+			sfk.Width = width;
 			sfk.InterpolationPoints = interpolationPoints.ToArray();
 			sfk.SmallDelta = Settings.Default.SmallDelta;
 			sfk.BigDelta = Settings.Default.BigDelta;

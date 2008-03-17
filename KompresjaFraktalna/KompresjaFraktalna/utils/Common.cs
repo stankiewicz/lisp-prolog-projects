@@ -4,7 +4,6 @@ using System.Text;
 
 namespace KompresjaFraktalna.utils {
 	class Common {
-
 		public static bool TryMapDomainToRegion(Domain domain, Region region, double s, byte[,] bitmap, out Params parameters) {
 			parameters = new Params();
 			parameters.A = ((double)region.Size - 1) / ((double)domain.Size - 1);

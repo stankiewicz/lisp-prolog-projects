@@ -30,6 +30,7 @@ namespace KompresjaFraktalna {
 			this.compressToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.decompressToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+			this.saveCompressedDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.loadCompressedDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
 			this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -42,9 +43,9 @@ namespace KompresjaFraktalna {
 			this.statusStrip1 = new System.Windows.Forms.StatusStrip();
 			this.toolStripProgressBar1 = new System.Windows.Forms.ToolStripProgressBar();
 			this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+			this.channelDataViewer1 = new KompresjaFraktalna.ChannelDataViewer();
 			this.panel1 = new System.Windows.Forms.Panel();
 			this.panel2 = new System.Windows.Forms.Panel();
-			this.channelDataViewer1 = new KompresjaFraktalna.ChannelDataViewer();
 			this.menuStrip1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.input)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.output)).BeginInit();
@@ -73,6 +74,7 @@ namespace KompresjaFraktalna {
             this.compressToolStripMenuItem,
             this.decompressToolStripMenuItem,
             this.toolStripSeparator1,
+            this.saveCompressedDataToolStripMenuItem,
             this.loadCompressedDataToolStripMenuItem,
             this.toolStripSeparator2,
             this.exitToolStripMenuItem});
@@ -85,7 +87,7 @@ namespace KompresjaFraktalna {
 			this.openToolStripMenuItem.Name = "openToolStripMenuItem";
 			this.openToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+O";
 			this.openToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-			this.openToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
+			this.openToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
 			this.openToolStripMenuItem.Text = "Open bitmap";
 			this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
 			// 
@@ -94,7 +96,7 @@ namespace KompresjaFraktalna {
 			this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
 			this.saveToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+S";
 			this.saveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-			this.saveToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
+			this.saveToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
 			this.saveToolStripMenuItem.Text = "Save bitmap";
 			this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
 			// 
@@ -103,7 +105,7 @@ namespace KompresjaFraktalna {
 			this.compressToolStripMenuItem.Name = "compressToolStripMenuItem";
 			this.compressToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+C";
 			this.compressToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
-			this.compressToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
+			this.compressToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
 			this.compressToolStripMenuItem.Text = "Compress";
 			this.compressToolStripMenuItem.Click += new System.EventHandler(this.compressToolStripMenuItem_Click);
 			// 
@@ -112,32 +114,40 @@ namespace KompresjaFraktalna {
 			this.decompressToolStripMenuItem.Name = "decompressToolStripMenuItem";
 			this.decompressToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+D";
 			this.decompressToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D)));
-			this.decompressToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
+			this.decompressToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
 			this.decompressToolStripMenuItem.Text = "Decompress";
 			this.decompressToolStripMenuItem.Click += new System.EventHandler(this.decompressToolStripMenuItem_Click);
 			// 
 			// toolStripSeparator1
 			// 
 			this.toolStripSeparator1.Name = "toolStripSeparator1";
-			this.toolStripSeparator1.Size = new System.Drawing.Size(179, 6);
+			this.toolStripSeparator1.Size = new System.Drawing.Size(180, 6);
+			// 
+			// saveCompressedDataToolStripMenuItem
+			// 
+			this.saveCompressedDataToolStripMenuItem.Name = "saveCompressedDataToolStripMenuItem";
+			this.saveCompressedDataToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
+			this.saveCompressedDataToolStripMenuItem.Text = "Save compressed data";
+			this.saveCompressedDataToolStripMenuItem.Click += new System.EventHandler(this.saveCompressedDataToolStripMenuItem_Click);
 			// 
 			// loadCompressedDataToolStripMenuItem
 			// 
 			this.loadCompressedDataToolStripMenuItem.Name = "loadCompressedDataToolStripMenuItem";
-			this.loadCompressedDataToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
+			this.loadCompressedDataToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
 			this.loadCompressedDataToolStripMenuItem.Text = "Load compressed data";
+			this.loadCompressedDataToolStripMenuItem.Click += new System.EventHandler(this.loadCompressedDataToolStripMenuItem_Click);
 			// 
 			// toolStripSeparator2
 			// 
 			this.toolStripSeparator2.Name = "toolStripSeparator2";
-			this.toolStripSeparator2.Size = new System.Drawing.Size(179, 6);
+			this.toolStripSeparator2.Size = new System.Drawing.Size(180, 6);
 			// 
 			// exitToolStripMenuItem
 			// 
 			this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
 			this.exitToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+X";
 			this.exitToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.X)));
-			this.exitToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
+			this.exitToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
 			this.exitToolStripMenuItem.Text = "Exit";
 			this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
 			// 
@@ -214,6 +224,17 @@ namespace KompresjaFraktalna {
 			this.tableLayoutPanel1.Size = new System.Drawing.Size(775, 642);
 			this.tableLayoutPanel1.TabIndex = 5;
 			// 
+			// channelDataViewer1
+			// 
+			this.channelDataViewer1.Blue = null;
+			this.channelDataViewer1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.channelDataViewer1.Green = null;
+			this.channelDataViewer1.Location = new System.Drawing.Point(3, 324);
+			this.channelDataViewer1.Name = "channelDataViewer1";
+			this.channelDataViewer1.Red = null;
+			this.channelDataViewer1.Size = new System.Drawing.Size(254, 234);
+			this.channelDataViewer1.TabIndex = 5;
+			// 
 			// panel1
 			// 
 			this.panel1.AutoScroll = true;
@@ -233,17 +254,6 @@ namespace KompresjaFraktalna {
 			this.panel2.Name = "panel2";
 			this.panel2.Size = new System.Drawing.Size(382, 315);
 			this.panel2.TabIndex = 7;
-			// 
-			// channelDataViewer1
-			// 
-			this.channelDataViewer1.Blue = null;
-			this.channelDataViewer1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.channelDataViewer1.Green = null;
-			this.channelDataViewer1.Location = new System.Drawing.Point(3, 324);
-			this.channelDataViewer1.Name = "channelDataViewer1";
-			this.channelDataViewer1.Red = null;
-			this.channelDataViewer1.Size = new System.Drawing.Size(254, 234);
-			this.channelDataViewer1.TabIndex = 5;
 			// 
 			// KompresjaForm
 			// 
@@ -297,6 +307,7 @@ namespace KompresjaFraktalna {
 		private ChannelDataViewer channelDataViewer1;
 		private System.Windows.Forms.Panel panel1;
 		private System.Windows.Forms.Panel panel2;
+		private System.Windows.Forms.ToolStripMenuItem saveCompressedDataToolStripMenuItem;
     }
 }
 

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using KompresjaFraktalna.utils;
+using System.Diagnostics;
 
 namespace KompresjaFraktalna {
     class Decompressor {
@@ -40,23 +41,26 @@ namespace KompresjaFraktalna {
             //posortowaæ kolejkê
             for (int step = 1; step <= steps; step++) {
                 foreach (Region r in _regions) {
+					correctRegion(r, _delta);
                     if (r.Depth > step) continue;
-					int domainX = r.Domain.Left;
-					int domainY = r.Domain.Bottom;
-                    Params parameters = r.Parameters;
-                    //Domain domain = new Domain(-1, domainX, domainY, _Delta + 1, _Delta + 1, 0, 0, 0, 0);
-					Domain domain = new Domain(-1, domainX, domainY, _Delta + 1, _Delta + 1);
+                    //Params parameters = r.Parameters;
+					//Domain domain = r.Domain;
+					Domain domain = Domain.fromIndex(r.DomainIdx, _Delta, width, height);
 
                     double factor = r.ContractivityFactor;
                     int krok = (int)((double)_delta / (Math.Pow(a, -(step - 1))));
-                    Map(krok, r.Domain, r, image);
+                    Map(krok, domain, r, image);
                 }
             }
             return image;
         }
 
-
-        
+		void correctRegion(Region r, int smallDelta) {
+			int d = r.Depth;
+			int factor = (int)Math.Pow(2, d-1);
+			int size = smallDelta / factor;
+			r.Width = r.Height = size + 1;
+		}
 
         private void Map(int krok, Domain domain, Region region, byte[,] bitmap) {
 

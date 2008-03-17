@@ -20,18 +20,21 @@ namespace KompresjaFraktalna {
 			get {
 				return _redChannelData;
 			}
+			set { _redChannelData = value; }
 		}
 
 		public ChannelData GreenChannel {
 			get {
 				return _greenChannelData;
 			}
+			set { _greenChannelData = value; }
 		}
 
 		public ChannelData BlueChannel {
 			get {
 				return _blueChannelData;
 			}
+			set { _blueChannelData = value; }
 		}
 
 		public Bitmap Input {
@@ -150,7 +153,11 @@ namespace KompresjaFraktalna {
 			bm.UnlockBitmap();
 		}
 
-		public void Decompress() {
+		public bool Decompress() {
+			if (_redChannelData == null || _blueChannelData == null || _greenChannelData == null) {
+				return false;
+			}
+
 			Console.WriteLine("Decompressing image data");
 
 			Decompressor decompressor = new Decompressor();
@@ -176,6 +183,8 @@ namespace KompresjaFraktalna {
 
 			Console.WriteLine("Tworzenie koñcowej bitmapy zakoñczone");
 			_output = bmp;
+
+			return true;
 		}
 
 		int getNewSize(int oldSize) {
