@@ -46,9 +46,7 @@ namespace KompresjaFraktalna {
 
 			for (int y = 0; y < height - 1; y += side) {
 				for (int x = 0; x < width - 1; x += side) {
-					if (y + side >= height || x + side >= width) {
-						throw new Exception("Aplikacja Ÿle dzia³a :) z³e regiony");
-					}
+					Debug.Assert(y + side < height && x + side < width, "Niepoprawne generowanie regionów");
 
 					Region r = new Region(x, y, side + 1, side + 1, 0, 0, 0, 0);
 					r.Depth = 1;
@@ -71,9 +69,7 @@ namespace KompresjaFraktalna {
 			int j = 0;
 			for (int y = 0; y < height - 1; y += side) {
 				for (int x = 0; x < width - 1; x += side) {
-					if (y + side >= height || x + side >= width) {
-						throw new Exception("Aplikacja Ÿle dzia³a :) z³e domeny");
-					}
+					Debug.Assert(y + side < height && x + side < width, "Niepoprawne generowanie domen");
 
 					Domain d = new Domain(j++, x, y, side + 1, side + 1, 0, 0, 0, 0);
 					domains.Enqueue(d);
@@ -81,6 +77,7 @@ namespace KompresjaFraktalna {
 			}
 			return domains;
 		}
+
 
 		/// <summary>
 		/// generuje punkty interpolacji. zakladam ze width = k* side +1 x height = l * side +1 , k,l Naturalne.
@@ -105,12 +102,19 @@ namespace KompresjaFraktalna {
             int delta = (domain.Width - 1) / (region.Width - 1);
 
             byte[,] mappedRegion = new byte[region.Width, region.Height];
-            for (int x = domain.Left; x <= domain.Right; x+=delta) {
-                for (int y = domain.Bottom; y <= domain.Top; y += delta) {
+
+			double xm = parameters.A * domain.Left + parameters.K;
+			double xmDelta = delta * parameters.A;
+
+            for (int x = domain.Left; x <= domain.Right; x+=delta, xm+= xmDelta) {
+				double ym = parameters.D * domain.Bottom + parameters.L;
+				double ymDelta = delta * parameters.D;
+
+                for (int y = domain.Bottom; y <= domain.Top; y += delta, ym += ymDelta) {
                     double z = bitmap[x, y];
-                    double xm = parameters.A * x + parameters.K;
-                    double ym = parameters.D * y + parameters.L;
-                    double zm = parameters.E * x + parameters.G * y + parameters.H * x * y + region.ContractivityFactor * z + parameters.M;
+
+					double zm = parameters.E * x + parameters.G * y + parameters.H * x * y + region.ContractivityFactor * z + parameters.M;
+
 					if (zm < 0) {
 						zm = 0;
 					} else if (zm > 255) {
@@ -127,13 +131,8 @@ namespace KompresjaFraktalna {
                 }
             }
 
-            return hij / (region.Width * region.Width);
-        }
-        
-
-        
-
-        
+            return hij / ((double)region.Width * (double)region.Width);
+        }       
 
         /// <summary>
         /// tworzy region z wypelnionymi danymi o kolorze
@@ -151,7 +150,7 @@ namespace KompresjaFraktalna {
 
 
         /// <summary>
-        /// 
+        /// //TODO: poprawiæ
         /// </summary>
         /// <param name="domain"></param>
         /// <param name="region"></param>
@@ -162,7 +161,7 @@ namespace KompresjaFraktalna {
 				return true;
 			}
 
-            do {
+			do {
 
                 if (region.Left != 0) {
                     // sprawdzamy lewy region
@@ -382,7 +381,11 @@ namespace KompresjaFraktalna {
 					Domain minDomain = null;
 					double minContrFactor = Double.MaxValue;
 
-					bool firstRun = true;
+					bool passedContractivity = false;
+					bool passedContinuity = false;
+
+					//bool firstRun = true;
+					bool alreadyFoundMatching = false;
 
 					foreach (Domain domain in domains) {
 						/*
@@ -395,12 +398,16 @@ namespace KompresjaFraktalna {
 						 * 3.b.ii. 
 						 * if |s| >= 1 go to 3.b.v . otherwise chec the condition of continuity. if it doesn't hold, go to 3.b.v
 						 */
-						if (Math.Abs(contractivityFactor) >= 1 && !firstRun) {
+						if (Math.Abs(contractivityFactor) < 1) {
+							passedContractivity = true;
+						} else if (alreadyFoundMatching) {
 							continue;
 						}
 
 						region.ContractivityFactor = contractivityFactor;
-						if (CheckConditionOfContinuity(domain, region, regions, _delta) == false && !firstRun) {
+						if (CheckConditionOfContinuity(domain, region, regions, _delta) == true) {
+							passedContinuity = true;
+						} else if (alreadyFoundMatching) {
 							continue;
 						}
 
@@ -449,7 +456,7 @@ namespace KompresjaFraktalna {
 						/*
 						 * trzeba wszystko to zapamietac jesli hij jest mniejsze
 						 */
-						if (hij < minHij || firstRun) {
+						if (hij < minHij || !alreadyFoundMatching) {
 							minDomain = domain;
 							minHij = hij;
 							minContrFactor = contractivityFactor;
@@ -460,7 +467,8 @@ namespace KompresjaFraktalna {
 						 * next y.
 						 */
 
-						firstRun = false;
+						//firstRun = false;
+						alreadyFoundMatching = alreadyFoundMatching || (passedContinuity && passedContractivity);
 					}
 
 					if (minDomain == null) {

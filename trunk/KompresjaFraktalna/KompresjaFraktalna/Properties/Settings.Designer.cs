@@ -25,7 +25,7 @@ namespace KompresjaFraktalna.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("256")]
+        [global::System.Configuration.DefaultSettingValueAttribute("16")]
         public double Epsilon {
             get {
                 return ((double)(this["Epsilon"]));
@@ -37,7 +37,7 @@ namespace KompresjaFraktalna.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("4")]
+        [global::System.Configuration.DefaultSettingValueAttribute("5")]
         public int Dmax {
             get {
                 return ((int)(this["Dmax"]));
@@ -73,7 +73,7 @@ namespace KompresjaFraktalna.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("16")]
+        [global::System.Configuration.DefaultSettingValueAttribute("8")]
         public double EpsilonHij {
             get {
                 return ((double)(this["EpsilonHij"]));

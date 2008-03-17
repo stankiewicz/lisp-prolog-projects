@@ -12,77 +12,55 @@ namespace KompresjaFraktalna {
         /// <param name="a"> The matrix</param>
         /// <param name="r"> The solution array</param>
         /// <returns>Success function</returns>
-        public static bool GaussianElimination(double[,] a, double[] r) {
+		public static bool GaussianElimination(double[,] a, double[] r) {
 
-            double t, s;
-            int i, l, j, k, m, n;
+			double t, s;
+			int i, l, j, k, m, n;
 
-            try {
+			n = r.Length - 1;
+			m = n + 1;
 
-                n = r.Length - 1;
+			//try {
+			for (l = 0; l <= n - 1; l++) {
+				j = l;
+				for (k = l + 1; k <= n; k++) {
+					if (!(Math.Abs(a[j, l]) >= Math.Abs(a[k, l]))) j = k;
+				}
 
-                m = n + 1;
+				if (!(j == l)) {
+					for (i = 0; i <= m; i++) {
+						t = a[l, i];
+						a[l, i] = a[j, i];
+						a[j, i] = t;
+					}
+				}
 
-                for (l = 0; l <= n - 1; l++) {
+				for (j = l + 1; j <= n; j++) {
+					t = (a[j, l] / a[l, l]);
+					for (i = 0; i <= m; i++) a[j, i] -= t * a[l, i];
+				}
+			}
 
-                    j = l;
+			r[n] = a[n, m] / a[n, n];
 
-                    for (k = l + 1; k <= n; k++) {
+			j = n - 1;
+			for (i = 0; i <= n - 1; i++, j--) {
+				s = 0;
 
-                        if (!(Math.Abs(a[j, l]) >= Math.Abs(a[k, l]))) j = k;
+				k = j + 1;
+				for (l = 0; l <= i; l++, k++) {
+					//k = j + l + 1;
+					s += a[j, k] * r[k];
+				}
+				r[j] = ((a[j, m] - s) / a[j, j]);
+			}
 
-                    }
+			return true;
 
-                    if (!(j == l)) {
-
-                        for (i = 0; i <= m; i++) {
-
-                            t = a[l, i];
-
-                            a[l, i] = a[j, i];
-
-                            a[j, i] = t;
-
-                        }
-
-                    }
-
-                    for (j = l + 1; j <= n; j++) {
-
-                        t = (a[j, l] / a[l, l]);
-
-                        for (i = 0; i <= m; i++) a[j, i] -= t * a[l, i];
-
-                    }
-
-                }
-
-                r[n] = a[n, m] / a[n, n];
-
-                for (i = 0; i <= n - 1; i++) {
-
-                    j = n - i - 1;
-
-                    s = 0;
-
-                    for (l = 0; l <= i; l++) {
-
-                        k = j + l + 1;
-
-                        s += a[j, k] * r[k];
-
-                    }
-
-                    r[j] = ((a[j, m] - s) / a[j, j]);
-
-                }
-
-                return true;
-
-            } catch(Exception e) {
-                System.Console.Error.WriteLine(e.Message);
-                return false;
-            }
-        }
+			//} catch(Exception e) {
+			//    System.Console.Error.WriteLine(e.Message);
+			//    return false;
+			//}
+		}
     }
 }
