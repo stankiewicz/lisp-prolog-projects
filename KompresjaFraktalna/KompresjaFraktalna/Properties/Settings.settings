@@ -3,7 +3,7 @@
   <Profiles />
   <Settings>
     <Setting Name="Epsilon" Type="System.Double" Scope="User">
-      <Value Profile="(Default)">8</Value>
+      <Value Profile="(Default)">32</Value>
     </Setting>
     <Setting Name="Dmax" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">5</Value>
