@@ -12,29 +12,36 @@ namespace KompresjaFraktalna {
         private int _height;
         private int _width;
 
-        int _x00, _x10, _x01, _x11;
+        //int _x00, _x10, _x01, _x11;
 
-        public Rectangle(int x, int y, int width, int height, int x00,int x10,int x01,int x11) {
-            this._x = x;
-            this._y = y;
-            this._width = width;
-            this._height = height;
-            _x00 = x00;
-            _x10 = x10;
-            _x01 = x01;
-            _x11 = x11;
-        }
+		//public Rectangle(int x, int y, int width, int height, int x00,int x10,int x01,int x11) {
+		//    this._x = x;
+		//    this._y = y;
+		//    this._width = width;
+		//    this._height = height;
+		//    _x00 = x00;
+		//    _x10 = x10;
+		//    _x01 = x01;
+		//    _x11 = x11;
+		//}
 
-        public Point[] Points {
-            get {
-                return new Point[] {
-                    new Point(Left,Bottom,_x00),
-                    new Point(Right,Bottom,_x01),
-                    new Point(Left,Top,_x10),
-                    new Point(Right,Top,_x11)
-                };
-            }
-        }
+		public Rectangle(int x, int y, int width, int height) {
+			this._x = x;
+			this._y = y;
+			this._width = width;
+			this._height = height;
+		}
+
+		//public Point[] Points {
+		//    get {
+		//        return new Point[] {
+		//            new Point(Left,Bottom,_x00),
+		//            new Point(Right,Bottom,_x01),
+		//            new Point(Left,Top,_x10),
+		//            new Point(Right,Top,_x11)
+		//        };
+		//    }
+		//}
 
         public int Left {
             get {
