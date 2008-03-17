@@ -3,10 +3,10 @@
   <Profiles />
   <Settings>
     <Setting Name="Epsilon" Type="System.Double" Scope="User">
-      <Value Profile="(Default)">256</Value>
+      <Value Profile="(Default)">16</Value>
     </Setting>
     <Setting Name="Dmax" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">4</Value>
+      <Value Profile="(Default)">5</Value>
     </Setting>
     <Setting Name="BigDelta" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">32</Value>
@@ -15,7 +15,7 @@
       <Value Profile="(Default)">16</Value>
     </Setting>
     <Setting Name="EpsilonHij" Type="System.Double" Scope="User">
-      <Value Profile="(Default)">16</Value>
+      <Value Profile="(Default)">8</Value>
     </Setting>
   </Settings>
 </SettingsFile>
