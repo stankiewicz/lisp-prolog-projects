@@ -195,5 +195,10 @@ namespace KompresjaFraktalna {
 
 			MessageBox.Show("Data loaded");
 		}
+
+		private void settingsToolStripMenuItem_Click(object sender, EventArgs e) {
+			SettingsForm sf = new SettingsForm();
+			sf.ShowDialog();
+		}
     }
 }
