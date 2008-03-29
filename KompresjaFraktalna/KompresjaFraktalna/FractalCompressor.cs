@@ -189,11 +189,10 @@ namespace KompresjaFraktalna {
 
 		int getNewSize(int oldSize) {
 			int bigDelta = Settings.Default.BigDelta;
-			int newSize = 0;
+			int newSize = 1;
 			while (newSize < oldSize) {
-				newSize += bigDelta;
+				newSize += bigDelta-1;
 			}
-			newSize++;
 			return newSize;
 		}
 	}
