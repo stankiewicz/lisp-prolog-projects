@@ -1,0 +1,135 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" >
+<head>
+    <title>Kompresja fraktalna</title>
+    <meta http-equiv=content-type content="text/html; charset=UTF-8">
+</head>
+<body style="background-position: center top; background-attachment: scroll; background-image: url(icarus_by_k4m3l.png); background-repeat: no-repeat">
+    <h1 style="text-align: center">
+        <span style="text-decoration: underline">Kompresja Fraktalna</span></h1>
+    <h2 style="text-align: center">
+        <span>Kompresja fraktalna z wykorzystaniem interpolacji funkcjami dwuliniowymi</span></h2>
+    <p>
+        Autorzy:</p>
+    <p>
+        Kamil Ślesiński,<br />
+        Radosław Stankiewicz</p>
+    <p>
+        <span>Cel projektu:</span></p>
+    <p>
+        <span></span>
+        Implementacja kompresji fraktalnej na podstawie publikacji "Image compression using
+        recurrent bivariate fractal interpolation surfaces" autorstwa P.Bouboulis, L.Dalla
+        i V.Drakopoulos (<a href="http://users.uoa.gr/~ldalla/papers/Bivariate%20Image%20compression.pdf">adres
+        publikacji</a>).</p>
+    <p>
+        Implementacja:</p>
+    <p>
+        Projekt został zaimplementowany w języku C#.NET i kod źródłowy można pobrać <a href="kompresja.zip">
+            stąd</a>. Implementacja nieznacznie odbiega od publikacji. Różnice dotyczą m.in.
+        formatu danych służących do
+        &nbsp;kompresowania i dekompresowania obrazów oraz pewnych
+        zmian w samym algorytmie kompresji.</p>
+    <p>
+        Testy:</p>
+    <p>
+        Przeprowadziliśmy testy dla paru przykładowych obrazków. Testy można zobaczyć w
+        tabeli poniżej.</p>
+    
+        <div style="text-align: center">
+            <table border="1" style="width: 700px">
+                <caption>
+                    Przykłady</caption>
+                <tr>
+                    <th align="center" valign="middle" style="width: 209px">
+                        Parametry<br />
+                        [Eps,EpsHij,Delta,delta,dMax]</th>
+                    <th align="center" valign="middle">
+                        Obraz Źródłowy</th>
+                    <th align="center" valign="middle">
+                        Obraz Wyściowy</th>
+                </tr>
+                <tr>
+                    <th align="center" valign="middle" style="width: 209px">
+                        32,8,32,16,5</th>
+                    <th align="center" valign="middle">
+                        <img height="256" src="tests/lena.bmp" width="256" /></th>
+                    <th align="center" valign="middle">
+                        <img height="256" src="tests/test1.png" /></th>
+                </tr>
+                <tr>
+                    <th align="center" valign="middle" style="width: 209px">
+                        32,8,32,16,5</th>
+                    <th align="center" valign="middle">
+                        <img height="256" src="tests/lena.bmp" width="256" /></th>
+                    <th align="center" valign="middle">
+                        <img height="256" src="tests/test2.png" /></th>
+                </tr>
+                <tr>
+                    <th align="center" valign="middle" style="width: 209px">
+                        32,8,32,16,4</th>
+                    <th align="center" valign="middle">
+                        <img src="tests/kaczor-donald.jpg" />&nbsp;</th>
+                    <th align="center" valign="middle">
+                        <img src="tests/test4.png" /></th>
+                </tr>
+                <tr>
+                    <th align="center" valign="middle" style="width: 209px">
+                        32,8,32,16,5</th>
+                    <th align="center" valign="middle">
+                        <img src="tests/kaczor-donald257.jpg" /></th>
+                    <th align="center" valign="middle">
+                        <img src="tests/test5.png" /></th>
+                </tr>
+                <tr>
+                    <th align="center" valign="middle" style="width: 209px">
+                        32,8,64,32,6</th>
+                    <th align="center" valign="middle"><img src="tests/kaczor-donald257.jpg" /></th>
+                    <th align="center" valign="middle">
+                        <img src="tests/test6.png" /></th>
+                </tr>
+                <tr>
+                    <th align="center" valign="middle" style="width: 209px">
+                        10,6,64,32,1</th>
+                    <th align="center" valign="middle"><img height="256" src="tests/lena.bmp" width="256" /></th>
+                    <th align="center" valign="middle">
+                        <img height="256" src="tests/test7.png" /></th>
+                </tr>
+                <tr>
+                    <th align="center" valign="middle" style="width: 209px">
+                        1,2,64,32,4</th>
+                    <th align="center" valign="middle">
+                        <img src="icarus_by_k4m3l.png" /></th>
+                    <th align="center" valign="middle">
+                        <img src="tests/test9.png" /></th>
+                </tr>
+                <tr>
+                    <th align="center" valign="middle" style="width: 209px">
+                        1,2,128,64,6</th>
+                    <th align="center" valign="middle">
+                        <img src="icarus_by_k4m3l.png" /></th>
+                    <th align="center" valign="middle">
+                        <img src="tests/test8.png" /></th>
+                </tr>
+                <tr>
+                    <th align="center" valign="middle" style="width: 209px">
+                    </th>
+                    <th align="center" valign="middle">
+                    </th>
+                    <th align="center" valign="middle">
+                    </th>
+                </tr>
+            </table>
+        </div>
+        Wnioski z testów:<ul>
+            <li>Kompresja jest stratna</li>
+            <li>Niebieski obrazek kompresuje się lepiej niż jpg</li>
+            <li>Gdyby zadbać o optymalny zapis skompresowej grafiki do pliku, kompresja byłaby dobra</li>
+            <li>Kompresja trwa w zależności od parametrów wejściowych od paru sekund do paru minut</li>
+            <li>Dekompresja jest bardzo szybka</li>
+            <li>Skuteczność kompresji bardzo zależy od obrazu źródłowego</li>
+        </ul>
+
+</body>
+</html>
+  
