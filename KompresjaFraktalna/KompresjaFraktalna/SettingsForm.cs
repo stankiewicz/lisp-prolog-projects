@@ -27,6 +27,8 @@ namespace KompresjaFraktalna {
 			Settings.Default.Epsilon = (double)nudEps.Value;
 			Settings.Default.EpsilonHij = (double)nudEpsHij.Value;
 			Settings.Default.SmallDelta = (int)nudSmallDelta.Value;
+
+			Settings.Default.Save();
 		}
 
 		private void nudSmallDelta_ValueChanged(object sender, EventArgs e) {
