@@ -37,6 +37,8 @@ namespace KompresjaFraktalna {
                 string file = this.openFileDialog1.FileName;
 
 				Bitmap bmp = new Bitmap(file);
+				bmp = (Bitmap)bmp.Clone();
+
 				fc.Input = bmp;
 
 				this.input.Image = fc.Input;
