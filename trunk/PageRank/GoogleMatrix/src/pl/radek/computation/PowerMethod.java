@@ -72,7 +72,7 @@ public class PowerMethod implements Method {
 			res[col] += tmp1 * v[col];
 			test +=res[col];
 		}
-		System.out.println("|xt|1="+test);
+		if(DEBUG)System.out.println("|xt|1="+test);
 		return res;
 	}
 

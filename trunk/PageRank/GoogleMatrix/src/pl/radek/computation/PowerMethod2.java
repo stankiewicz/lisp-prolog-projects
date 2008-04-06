@@ -34,15 +34,16 @@ public class PowerMethod2 implements Method {
 			}			
 		}
 		
+		double alfa = matrix.getAlfa();
+		double bound =2;
 		
-		double bound =0;
 		do {
 			++k;
 			
 			
-			
+			bound *= alfa ;
 			eigenVector = multiply(eigenVector, s);
-			bound = Math.pow(matrix.getAlfa(), k) * 2.0;
+			//bound = Math.pow(matrix.getAlfa(), k) * 2.0;
 		} while (bound >= epsilon);
 
 		// warunek stopu :
@@ -80,7 +81,7 @@ public class PowerMethod2 implements Method {
 		for (int col = 0; col < len; ++col) {
 			test +=res[col];
 		}
-		System.out.println("|xt|1="+test);
+		if(DEBUG)System.out.println("|xt|1="+test);
 		return res;
 	}
 

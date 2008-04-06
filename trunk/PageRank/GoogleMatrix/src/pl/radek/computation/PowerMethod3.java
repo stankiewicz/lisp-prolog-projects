@@ -48,7 +48,7 @@ public class PowerMethod3 implements Method {
 			for (int col = 0; col < len; ++col) {
 				test +=eigenVector[col];
 			}
-			System.out.println("|xt|1="+test);
+			if(DEBUG)System.out.println("|xt|1="+test);
 			
 			bound = Math.pow(matrix.getAlfa(), k) * 2.0;
 		} while (bound >= epsilon);

@@ -4,6 +4,7 @@ import pl.radek.GoogleMatrix;
 
 public interface Method {
 
+	static final boolean DEBUG = false;
 	/**
 	 * Liczy wartosci wlasne - page rank
 	 * @param matrix google matrix
