@@ -1,17 +1,27 @@
 package pl.radek;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Node {
 	String name;
 	double personalize;
-	ArrayList<String> keywords;
+	List<String> keywords;
 	ArrayList<Node> links;
 	double pageRank;
 	ArrayList<Node> incomingLinks;
-	
+	boolean visited = false;
 	int rank;
 	
+	
+	public boolean isVisited() {
+		return visited;
+	}
+
+	public void setVisited(boolean visited) {
+		this.visited = visited;
+	}
+
 	public int getRank() {
 		return rank;
 	}
@@ -32,7 +42,7 @@ public class Node {
 	@Override
 	public String toString() {
 		// TODO Auto-generated method stub
-		return name;
+		return name + " " +(rank==Integer.MAX_VALUE ? "":rank);
 	}
 
 	public String getName() {
@@ -47,11 +57,11 @@ public class Node {
 	public void setPersonalize(double personize) {
 		this.personalize = personize;
 	}
-	public ArrayList<String> getKeywords() {
+	public List<String> getKeywords() {
 		return keywords;
 	}
-	public void setKeywords(ArrayList<String> keywords) {
-		this.keywords = keywords;
+	public void setKeywords(List<String> name2) {
+		this.keywords = name2;
 	}
 	public ArrayList<Node> getLinks() {
 		return links;
