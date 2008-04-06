@@ -31,8 +31,12 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 
+import engine.Worm;
+
 import pl.radek.computation.Method;
 import pl.radek.computation.PowerMethod;
+import javax.swing.JPasswordField;
+import javax.swing.JLabel;
 
 /**
  * @author Radek
@@ -40,44 +44,53 @@ import pl.radek.computation.PowerMethod;
  */
 public class Viewer extends JFrame {
 
-	private final ArrayList<Node> nodes = new ArrayList<Node>();
-	
-	
+	private final ArrayList<Node> nodes = new ArrayList<Node>(); // @jve:decl-index=0:
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 8502377759600889595L;
+
 	private JScrollPane stronyZPolaczeniami = null;
+
 	private JTable tabelaStronZPolaczeniami = null;
+
 	private JPanel jPanel = null;
+
 	private JComboBox wyborStrony = null;
+
 	private JScrollPane polaczeniaZDanejStrony = null;
+
 	private JTable tabelaPolaczenZDanejStrony = null;
+
 	private JTextField nazwaStrony = null;
+
 	private JButton dodajStrone = null;
+
 	private JComboBox odCombo = null;
+
 	private JComboBox doCombo = null;
+
 	private JButton dodajPolaczenie = null;
+
 	private JButton usun = null;
 
-	private String [] kw = new String[] {
-			"k1","k2","k3","k4","k5"
-	};
-	
-	private ArrayList<String> generateRandomKeywordList(){
+	private String[] kw = new String[] { "k1", "k2", "k3", "k4", "k5" };
+
+	private ArrayList<String> generateRandomKeywordList() {
 		ArrayList<String> list = new ArrayList<String>();
 		Random r = new Random(new GregorianCalendar().getTimeInMillis());
-		for(String s:kw) {
-			if(r.nextBoolean()) {
+		for (String s : kw) {
+			if (r.nextBoolean()) {
 				list.add(s);
 			}
-		}		
+		}
 		return list;
 	}
-	
+
 	private class procKiller extends Thread {
 		ProcessBuilder pb;
+
 		Process proc;
 
 		public procKiller(ProcessBuilder proc) {
@@ -123,9 +136,29 @@ public class Viewer extends JFrame {
 
 	private procKiller procKiller;
 
-
-
 	private JTextField keywords;
+
+	private JTextField urlFind = null;
+
+	private JButton fillAll = null;
+
+	private JScrollPane polaczeniaDoDanejStrony = null;
+
+	private JTable tabelaPolaczenDoDanejStrony = null;
+
+	private JLabel jLabelPolaczeniaDoWezla = null;
+
+	private JLabel jLabelPolaczeniaZWezla = null;
+
+	private JLabel jLabelWezly = null;
+
+	private JLabel jLabelNazwa = null;
+
+	private JLabel jLabelOd = null;
+
+	private JLabel jLabelDo = null;
+
+	private JLabel jLabeladresy = null;
 
 	private void prepareFile() {
 		OutputStream stream = null;
@@ -197,31 +230,31 @@ public class Viewer extends JFrame {
 			e.printStackTrace();
 		}
 	}
-	
-	private double [] generatePersonalizationVector(ArrayList<Node> nodes) {
+
+	private double[] generatePersonalizationVector(ArrayList<Node> nodes) {
 		String keywords = getKeywords().getText();
 		keywords = keywords.trim();
 		keywords = keywords.replaceAll("  ", " ");
 		keywords = keywords.replaceAll("  ", " ");
-		String [] kw = keywords.split(" ");
-		double [] v = new double [nodes.size()];
+		String[] kw = keywords.split(" ");
+		double[] v = new double[nodes.size()];
 		double sum = 0;
-		for(int i = 0;i<v.length;++i) {
+		for (int i = 0; i < v.length; ++i) {
 			Node node = nodes.get(i);
-			for(String key:kw) {
-				if(node.getKeywords().contains(key)) {
+			for (String key : kw) {
+				if (node.getKeywords().contains(key)) {
 					++v[i];
 					sum++;
 				}
 			}
 		}
-		if(sum == 0) {
+		if (sum == 0) {
 			for (int i = 0; i < v.length; ++i) {
 				v[i] = 1.0 / v.length;
 			}
-		}else {
+		} else {
 			for (int i = 0; i < v.length; ++i) {
-				v[i] /=sum;
+				v[i] /= sum;
 			}
 		}
 		return v;
@@ -237,7 +270,7 @@ public class Viewer extends JFrame {
 			double num = nodes.get(row).links.size();
 			if (num == 0) {
 				for (int col = 0; col < nodes.size(); ++col)
-					s[row][col] = 1.0/nodes.size();
+					s[row][col] = 1.0 / nodes.size();
 			} else {
 				for (Node n : nodes.get(row).links) {
 					int idx = nodes.indexOf(n);
@@ -249,11 +282,11 @@ public class Viewer extends JFrame {
 
 		double[] v;// = new double[nodes.size()];
 		// TODO
-		//for (int i = 0; i < v.length; ++i) {
-		//	v[i] = 1.0 / v.length;
-		//}
+		// for (int i = 0; i < v.length; ++i) {
+		// v[i] = 1.0 / v.length;
+		// }
 		v = generatePersonalizationVector(nodes);
-		gm.setAlfa(0.85);
+		gm.setAlfa(0.95);
 		gm.setS(s);
 		gm.setV(v);
 
@@ -273,7 +306,6 @@ public class Viewer extends JFrame {
 		menuCountRankItem.addActionListener(new ActionListener() {
 
 			@SuppressWarnings("unchecked")
-			
 			public void actionPerformed(ActionEvent e) {
 				System.out.println("Przeliczam ranking");
 				ArrayList<Node> list = (ArrayList<Node>) nodes.clone();
@@ -291,34 +323,60 @@ public class Viewer extends JFrame {
 					list.get(i).setPageRank(pageRank[i]);
 				}
 
+				calculatePageRanks2(list);
+				((NodesTableModel) getTabelaPolaczenZDanejStrony().getModel())
+						.fireTableDataChanged();
+
+				((NodesTableModel) getTabelaPolaczenDoDanejStrony().getModel())
+						.fireTableDataChanged();
+				((NodesTableModel) getTabelaStronZPolaczeniami().getModel())
+						.fireTableDataChanged();
+
+			}
+
+			private void calculatePageRanks2(ArrayList<Node> list) {
+
+				HashMap<Double, Integer> buckets = new HashMap<Double, Integer>();
+
 				double max = 0;
 				int idx = 0;
 				int size = list.size();
 				for (int i = 0; i < size; ++i) {
+					if (buckets.containsKey(list.get(i).getPageRank())) {
+						buckets.put(list.get(i).getPageRank(), buckets.get(list
+								.get(i).getPageRank()) + 1);
+					} else {
+						buckets.put(list.get(i).getPageRank(), 1);
+					}
+
+				}
+				int s = buckets.size();
+				double[] ranking = new double[s];
+				for (int i = 0; i < s; ++i) {
 					max = 0;
-					for (int j = 0; j < list.size(); ++j) {
-						if (list.get(j).getPageRank() > max) {
-							max = list.get(j).getPageRank();
-							idx = j;
+					for (Double d : buckets.keySet()) {
+						if (d > max) {
+							max = d;
+						}
+
+					}
+					buckets.remove(max);
+					ranking[i] = max;
+				}
+				for (int i = 0; i < size; ++i) {
+					double r = list.get(i).pageRank;
+					for (int id = 0; id < s; ++id) {
+						if (ranking[id] == r) {
+							list.get(i).setRank(id + 1);
 						}
 					}
-					Node n = list.get(idx);
-					n.setRank(i + 1);
-					list.remove(n);
 				}
-				((NodesTableModel) getTabelaPolaczenZDanejStrony().getModel())
-						.fireTableDataChanged();
-
-				((NodesTableModel) getTabelaStronZPolaczeniami().getModel())
-						.fireTableDataChanged();
-
 			}
 
 		});
 		JMenuItem menuOpenFileItem = new JMenuItem("Otwórz");
 		menuOpenFileItem.addActionListener(new ActionListener() {
 
-			
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
 
@@ -329,7 +387,6 @@ public class Viewer extends JFrame {
 		JMenuItem menuSaveFileItem = new JMenuItem("Zapisz");
 		menuSaveFileItem.addActionListener(new ActionListener() {
 
-			
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
 
@@ -376,8 +433,8 @@ public class Viewer extends JFrame {
 		menuRank.add(menuCountRankItem);
 		menuVisualize.add(menuVisualizeItem);
 		menuVisualize.add(menuCloseVisualizeItem);
-		menuFile.add(menuOpenFileItem);
-		menuFile.add(menuSaveFileItem);
+		// menuFile.add(menuOpenFileItem);
+		// menuFile.add(menuSaveFileItem);
 		menuFile.add(menuItem);
 		menuBar.add(menuFile);
 		menuBar.add(menuVisualize);
@@ -397,7 +454,7 @@ public class Viewer extends JFrame {
 	 * 
 	 */
 	private void initialize() {
-		this.setSize(new Dimension(761, 612));
+		this.setSize(new Dimension(859, 845));
 		this.setTitle("Viewer");
 		this.setContentPane(getJPanel());
 
@@ -411,7 +468,9 @@ public class Viewer extends JFrame {
 	private JScrollPane getStronyZPolaczeniami() {
 		if (stronyZPolaczeniami == null) {
 			stronyZPolaczeniami = new JScrollPane();
-			stronyZPolaczeniami.setBounds(new Rectangle(28, 112, 687, 190));
+			stronyZPolaczeniami.setBounds(new Rectangle(28, 129, 812, 190));
+			stronyZPolaczeniami
+					.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 			stronyZPolaczeniami.setViewportView(getTabelaStronZPolaczeniami());
 		}
 		return stronyZPolaczeniami;
@@ -441,6 +500,27 @@ public class Viewer extends JFrame {
 	 */
 	private JPanel getJPanel() {
 		if (jPanel == null) {
+			jLabeladresy = new JLabel();
+			jLabeladresy.setBounds(new Rectangle(33, 682, 247, 23));
+			jLabeladresy.setText("Adresy oddzielone spacjami");
+			jLabelDo = new JLabel();
+			jLabelDo.setBounds(new Rectangle(183, 48, 113, 21));
+			jLabelDo.setText("Do");
+			jLabelOd = new JLabel();
+			jLabelOd.setBounds(new Rectangle(31, 47, 133, 20));
+			jLabelOd.setText("Od");
+			jLabelNazwa = new JLabel();
+			jLabelNazwa.setBounds(new Rectangle(30, 0, 142, 31));
+			jLabelNazwa.setText("Nazwa wêz³a");
+			jLabelWezly = new JLabel();
+			jLabelWezly.setBounds(new Rectangle(28, 110, 175, 19));
+			jLabelWezly.setText("Tabela wêz³ów");
+			jLabelPolaczeniaZWezla = new JLabel();
+			jLabelPolaczeniaZWezla.setBounds(new Rectangle(30, 360, 180, 33));
+			jLabelPolaczeniaZWezla.setText("Po³¹czenia z danego wêz³a");
+			jLabelPolaczeniaDoWezla = new JLabel();
+			jLabelPolaczeniaDoWezla.setBounds(new Rectangle(30, 525, 178, 20));
+			jLabelPolaczeniaDoWezla.setText("Po³¹czenia do danego wêz³a");
 			jPanel = new JPanel();
 			jPanel.setLayout(null);
 			jPanel.add(getStronyZPolaczeniami(), null);
@@ -453,6 +533,20 @@ public class Viewer extends JFrame {
 			jPanel.add(getDoCombo(), null);
 			jPanel.add(getDodajPolaczenie(), null);
 			jPanel.add(getUsun(), null);
+			jPanel.add(getUrlFind(), null);
+			jPanel.add(getFillAll(), null);
+			jPanel.add(getPolaczeniaDoDanejStrony(), null);
+			jPanel.add(jLabelPolaczeniaDoWezla, null);
+			jPanel.add(jLabelPolaczeniaZWezla, null);
+			jPanel.add(jLabelWezly, null);
+			jPanel.add(jLabelNazwa, null);
+			jPanel.add(jLabelOd, null);
+			jPanel.add(jLabelDo, null);
+			jPanel.add(jLabeladresy, null);
+			jPanel.add(odCombo, null);
+			jPanel.add(doCombo, null);
+			jPanel.add(wyborStrony, null);
+
 		}
 		return jPanel;
 	}
@@ -461,6 +555,7 @@ public class Viewer extends JFrame {
 		if (keywords == null) {
 			keywords = new JTextField();
 			keywords.setBounds(new Rectangle(350, 28, 249, 20));
+			keywords.setVisible(false);
 		}
 		return keywords;
 	}
@@ -474,7 +569,7 @@ public class Viewer extends JFrame {
 		if (wyborStrony == null) {
 			wyborStrony = new JComboBox();
 			wyborStrony.setSize(new Dimension(304, 31));
-			wyborStrony.setLocation(new Point(28, 305));
+			wyborStrony.setLocation(new Point(30, 330));
 			wyborStrony.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
 					if (wyborStrony.getSelectedItem() == null)
@@ -488,6 +583,9 @@ public class Viewer extends JFrame {
 					getTabelaPolaczenZDanejStrony().setModel(
 							new NodesTableModel(((Node) wyborStrony
 									.getSelectedItem()).links));
+					getTabelaPolaczenDoDanejStrony().setModel(
+							new NodesTableModel(((Node) wyborStrony
+									.getSelectedItem()).incomingLinks));
 				}
 			});
 		}
@@ -502,7 +600,9 @@ public class Viewer extends JFrame {
 	private JScrollPane getPolaczeniaZDanejStrony() {
 		if (polaczeniaZDanejStrony == null) {
 			polaczeniaZDanejStrony = new JScrollPane();
-			polaczeniaZDanejStrony.setBounds(new Rectangle(27, 340, 691, 133));
+			polaczeniaZDanejStrony.setBounds(new Rectangle(30, 390, 812, 133));
+			polaczeniaZDanejStrony
+					.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 			polaczeniaZDanejStrony
 					.setViewportView(getTabelaPolaczenZDanejStrony());
 		}
@@ -529,7 +629,7 @@ public class Viewer extends JFrame {
 	private JTextField getNazwaStrony() {
 		if (nazwaStrony == null) {
 			nazwaStrony = new JTextField();
-			nazwaStrony.setBounds(new Rectangle(27, 28, 149, 20));
+			nazwaStrony.setBounds(new Rectangle(27, 28, 154, 18));
 		}
 		return nazwaStrony;
 	}
@@ -539,17 +639,21 @@ public class Viewer extends JFrame {
 		getTabelaStronZPolaczeniami().setModel(new NodesTableModel(nodes));
 
 		getTabelaPolaczenZDanejStrony().setModel(new NodesTableModel());
+		getTabelaPolaczenDoDanejStrony().setModel(new NodesTableModel());
 		// wypelnianie combo wyboru strony
-		JComboBox wybor = getWyborStrony();
-		JComboBox od = getOdCombo();
-		JComboBox doo = getDoCombo();
-		wybor.removeAllItems();
-		od.removeAllItems();
-		doo.removeAllItems();
+		// wyborStrony = getWyborStrony();
+		// wyborStrony.setBounds(new Rectangle(30, 480, 226, 25));
+		// odComboBox = getOdCombo();
+
+		// JComboBox doo = getDoCombo();
+
+		wyborStrony.removeAllItems();
+		odCombo.removeAllItems();
+		doCombo.removeAllItems();
 		for (Node n : nodes) {
-			wybor.addItem(n);
-			od.addItem(n);
-			doo.addItem(n);
+			wyborStrony.addItem(n);
+			odCombo.addItem(n);
+			doCombo.addItem(n);
 		}
 
 	}
@@ -593,7 +697,7 @@ public class Viewer extends JFrame {
 	private JComboBox getOdCombo() {
 		if (odCombo == null) {
 			odCombo = new JComboBox();
-			odCombo.setBounds(new Rectangle(28, 77, 188, 25));
+			odCombo.setBounds(new Rectangle(30, 75, 256, 31));
 		}
 		return odCombo;
 	}
@@ -606,7 +710,7 @@ public class Viewer extends JFrame {
 	private JComboBox getDoCombo() {
 		if (doCombo == null) {
 			doCombo = new JComboBox();
-			doCombo.setBounds(new Rectangle(253, 78, 188, 25));
+			doCombo.setBounds(new Rectangle(300, 75, 256, 31));
 		}
 		return doCombo;
 	}
@@ -619,7 +723,7 @@ public class Viewer extends JFrame {
 	private JButton getDodajPolaczenie() {
 		if (dodajPolaczenie == null) {
 			dodajPolaczenie = new JButton();
-			dodajPolaczenie.setBounds(new Rectangle(448, 74, 135, 33));
+			dodajPolaczenie.setBounds(new Rectangle(570, 75, 121, 33));
 			dodajPolaczenie.setText("dodaj po³¹czenie");
 			dodajPolaczenie
 					.addActionListener(new java.awt.event.ActionListener() {
@@ -667,7 +771,7 @@ public class Viewer extends JFrame {
 	private JButton getUsun() {
 		if (usun == null) {
 			usun = new JButton();
-			usun.setBounds(new Rectangle(592, 74, 135, 33));
+			usun.setBounds(new Rectangle(705, 75, 135, 33));
 			usun.setText("usuñ po³¹czenie");
 			usun.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -702,6 +806,92 @@ public class Viewer extends JFrame {
 			});
 		}
 		return usun;
+	}
+
+	/**
+	 * This method initializes urlFind
+	 * 
+	 * @return javax.swing.JTextField
+	 */
+	private JTextField getUrlFind() {
+		if (urlFind == null) {
+			urlFind = new JTextField();
+			urlFind.setBounds(new Rectangle(30, 705, 809, 29));
+		}
+		return urlFind;
+	}
+
+	/**
+	 * This method initializes fillAll
+	 * 
+	 * @return javax.swing.JButton
+	 */
+	private JButton getFillAll() {
+		if (fillAll == null) {
+			fillAll = new JButton();
+			fillAll.setBounds(new Rectangle(30, 735, 241, 30));
+			fillAll.setText("stwórz siatkê po³¹czeñ");
+			fillAll.addActionListener(new java.awt.event.ActionListener() {
+				public void actionPerformed(java.awt.event.ActionEvent e) {
+					System.out.println("actionPerformed()"); // TODO
+					// Auto-generated
+					// Event stub
+					// actionPerformed()
+					// Worm w = new Worm();
+					// nodes.clear();
+					//
+					// //nodes.addAll(w.start(getUrlFind().getText()));
+					//					
+					// nodes.addAll(Progress.showProgress(getUrlFind().getText()));
+					// fillWithData();
+					stworz();
+				}
+			});
+		}
+		return fillAll;
+	}
+
+	private void stworz() {
+
+		Worm w = new Worm();
+		nodes.clear();
+
+		// nodes.addAll(w.start(getUrlFind().getText()));
+
+		ArrayList<Node> lista = Progress.showProgress(getUrlFind().getText());
+		if (lista != null) {
+			nodes.addAll(lista);
+			fillWithData();
+		}
+	}
+
+	/**
+	 * This method initializes polaczeniaDoDanejStrony
+	 * 
+	 * @return javax.swing.JScrollPane
+	 */
+	private JScrollPane getPolaczeniaDoDanejStrony() {
+		if (polaczeniaDoDanejStrony == null) {
+			polaczeniaDoDanejStrony = new JScrollPane();
+			polaczeniaDoDanejStrony.setBounds(new Rectangle(30, 555, 812, 127));
+			polaczeniaDoDanejStrony
+					.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+			polaczeniaDoDanejStrony
+					.setViewportView(getTabelaPolaczenDoDanejStrony());
+		}
+		return polaczeniaDoDanejStrony;
+	}
+
+	/**
+	 * This method initializes tabelaPolaczenDoDanejStrony
+	 * 
+	 * @return javax.swing.JTable
+	 */
+	private JTable getTabelaPolaczenDoDanejStrony() {
+		if (tabelaPolaczenDoDanejStrony == null) {
+			tabelaPolaczenDoDanejStrony = new JTable(new NodesTableModel());
+		}
+		return tabelaPolaczenDoDanejStrony;
 	}
 
 	/**
