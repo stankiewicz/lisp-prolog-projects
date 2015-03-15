@@ -1,0 +1,1 @@
+Lisp and prolog projects @ pl.edu.pw.mini.pis
